@@ -1,0 +1,46 @@
+import {DataTypes} from 'sequelize'
+import { sequelize } from '../database/database.js'
+import { Disponible } from './Disponible.js'
+ 
+export const Ambiente = sequelize.define('ambientes',{
+    id_ambiente:{
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    nombre_ambiente:{
+        type: DataTypes.STRING
+    },
+    tipo:{
+        type: DataTypes.STRING
+    },
+    capacidad:{
+        type: DataTypes.INTEGER
+    },
+    disponible:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
+    computadora:{
+        type: DataTypes.INTEGER,
+    },
+    proyector:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    ubicacion:{
+        type: DataTypes.STRING
+    },
+},{
+    timestamps: false
+});
+
+Ambiente.hasMany(Disponible,{
+    foreignKey: 'ambiente_id',
+    sourceKey: 'id_ambiente'
+})
+
+Disponible.belongsTo(Ambiente,{
+    foreignKey: 'ambiente_id',
+    targetId: 'id_ambiente'
+})
