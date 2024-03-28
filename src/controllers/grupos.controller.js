@@ -18,7 +18,8 @@ export const getTablaMaterias = async (req, res) => {
             }
         });
 
-        const gruposFormateados = grupos.map(grupo => ({
+        const gruposFormateados = grupos.map((grupo, index) => ({
+            numero: index+1,
             id_grupo: grupo.id_grupo,
             nombre_grupo: grupo.nombre_grupo,
             docente: grupo.docente,
