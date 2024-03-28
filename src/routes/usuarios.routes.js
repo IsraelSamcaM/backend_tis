@@ -9,6 +9,6 @@ router.post('/', createUsuario);
 router.put('/:id_usuario', updateUsuario);
 router.delete('/:id_usuario', deleteUsuario);
 
-router.get('/:id_usuario/grupos', getUsuarioGrupo);
+router.get('/:id_usuario/grupo', getUsuarioGrupo);
 
 export default router;
