@@ -9,4 +9,5 @@ router.put('/:id_materia', updateMateria);
 router.delete('/:id_materia', deleteMateria);
 router.get('/:id_materia', getMateria);
 
+
 export default router;

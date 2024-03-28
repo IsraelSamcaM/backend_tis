@@ -1,4 +1,5 @@
 import { Grupo } from '../models/Grupo.js';
+import { Materia } from '../models/Materia.js';
 
 export const getGrupos = async (req, res) => {
     try {
@@ -6,6 +7,31 @@ export const getGrupos = async (req, res) => {
         res.json(grupos);
     } catch (error) {
         return res.status(500).json({ message: error.message });
+    }
+};
+
+export const getTablaMaterias = async (req, res) => {
+    try {
+        const grupos = await Grupo.findAll({
+            include: {
+                model: Materia
+            }
+        });
+
+        const gruposFormateados = grupos.map(grupo => ({
+            id_grupo: grupo.id_grupo,
+            nombre_grupo: grupo.nombre_grupo,
+            docente: grupo.docente,
+            cantidad_est: grupo.cantidad_est,
+            usuario_id: grupo.usuario_id,
+            materia_id: grupo.materia_id,
+            nombre_materia: grupo.materia.nombre_materia, 
+            nivel_materia: grupo.materia.nivel_materia
+
+        }));
+        res.json(gruposFormateados);
+    } catch (error){
+        return res.status(500).json({message: error.message });
     }
 };
 
