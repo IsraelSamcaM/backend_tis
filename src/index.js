@@ -8,7 +8,7 @@ import { sequelize } from "./database/database.js";
 // import './models/Dia_habil.js'
 // import './models/Disponible.js'
 // import './models/Gestion.js'
-// import './models/Grupo.js'
+//import './models/Grupo.js'
 // import './models/Materia.js'
 // import './models/Periodo.js'
 // import './models/Reserva.js'

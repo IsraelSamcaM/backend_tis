@@ -12,6 +12,9 @@ export const Grupo = sequelize.define('grupos',{
     nombre_grupo:{
         type: DataTypes.STRING
     },
+    docente:{
+        type: DataTypes.STRING
+    },
     cantidad_est:{
         type: DataTypes.INTEGER
     }

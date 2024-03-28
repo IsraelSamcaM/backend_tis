@@ -23,6 +23,7 @@ export const Ambiente = sequelize.define('ambientes',{
     },
     computadora:{
         type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     proyector:{
         type: DataTypes.BOOLEAN,
