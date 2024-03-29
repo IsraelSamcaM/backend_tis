@@ -4,7 +4,6 @@ export const getAmbientes = async (req, res) =>{
     try {
         const ambientes = await Ambiente.findAll()
         res.json(ambientes)
-        
     } catch (error) {
         return res.status(500).json({message: error.status})
     }
@@ -41,6 +40,7 @@ export const updateAmbiente = async (req,res)=>{
         const {nombre_ambiente,tipo,capacidad,computadora,ubicacion, disponible,proyector} = req.body; 
 
         const ambiente = await Ambiente.findByPk(id_ambiente)
+
         ambiente.nombre_ambiente = nombre_ambiente;
         ambiente.tipo = tipo;
         ambiente.capacidad = capacidad;
@@ -66,4 +66,8 @@ export const deleteAmbiente = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
+}
+
+export const ivangay = async (req, res) => {
+    res.json({message: "soy ivan gay"})
 }

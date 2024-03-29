@@ -1,9 +1,7 @@
 import express from "express";
 //import morgan from "morgan";
 
-
 const app = express();
-
 
 //Import routes
 import ambientesRoutes from "./routes/ambientes.routes.js";
