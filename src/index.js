@@ -11,6 +11,8 @@ import { sequelize } from "./database/database.js";
 // import './models/Periodo.js'
 // import './models/Reserva.js'
 // import './models/Usuario.js'
+
+console.log('ALE GAY')
   
 async function main() {
   await sequelize.sync({force: false});
