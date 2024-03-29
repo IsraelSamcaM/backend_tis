@@ -47,9 +47,9 @@ export const getGrupo = async (req, res) => {
 };
 
 export const createGrupo = async (req, res) => {
-    const { nombre_grupo, cantidad_est, materia_id, usuario_id } = req.body;
+    const { nombre_grupo, cantidad_est, materia_id, usuario_id, docente } = req.body;
     try {
-        const newGrupo = await Grupo.create({ nombre_grupo, cantidad_est,materia_id, usuario_id  });
+        const newGrupo = await Grupo.create({ nombre_grupo, cantidad_est,materia_id, usuario_id, docente  });
         res.json(newGrupo);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -60,7 +60,7 @@ export const updateGrupo = async (req, res) => {
     try {
         const { id_grupo } = req.params;
 
-        const grupo = await Grupo.findOne(id_grupo);
+        const grupo = await Grupo.findByPk(id_grupo);
         grupo.set(req.body)
         await grupo.save();
         res.json(grupo);
