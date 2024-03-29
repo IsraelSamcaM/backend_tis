@@ -11,7 +11,13 @@ export const Disponible = sequelize.define('disponibles',{
     },
     dia:{
         type: DataTypes.STRING
-    }
+    },
+    disponibilidad:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+        
+    },
+    
 
 },{
     timestamps: false
