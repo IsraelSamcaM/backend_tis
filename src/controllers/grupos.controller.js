@@ -1,5 +1,5 @@
 import { Grupo } from '../models/Grupo.js';
-
+import { Materia } from '../models/Materia.js';
 export const getGrupos = async (req, res) => {
     try {
         const grupos = await Grupo.findAll();
