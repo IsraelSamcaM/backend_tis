@@ -22,10 +22,10 @@ export const getAmbiente = async (req, res) =>{
 
 export const createAmbiente = async (req, res) =>{
     //extraer los datos del body
-    const { nombre_ambiente,tipo,capacidad,computadora,ubicacion }= req.body
+    const { nombre_ambiente,tipo,capacidad,computadora,ubicacion,porcentaje_min,porcentaje_max }= req.body
     try {
         const newAmbiente = await Ambiente.create({
-            nombre_ambiente,tipo,capacidad,computadora,ubicacion
+            nombre_ambiente,tipo,capacidad,computadora,ubicacion,porcentaje_min,porcentaje_max
         });
         res.json(newAmbiente);
     } catch (error) {
