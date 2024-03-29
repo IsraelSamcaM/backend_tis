@@ -37,7 +37,7 @@ export const updateAmbiente = async (req,res)=>{
     
     try {
         const {id_ambiente} = req.params;
-        const {nombre_ambiente,tipo,capacidad,computadora,ubicacion, disponible,proyector} = req.body; 
+        const {nombre_ambiente,tipo,capacidad,computadora,ubicacion, disponible,proyector,porcentaje_min,porcentaje_max} = req.body; 
 
         const ambiente = await Ambiente.findByPk(id_ambiente)
 
@@ -48,6 +48,8 @@ export const updateAmbiente = async (req,res)=>{
         ambiente.ubicacion = ubicacion;
         ambiente.disponible = disponible;
         ambiente.proyector = proyector;
+        ambiente.porcentaje_min = porcentaje_min;
+        ambiente.porcentaje_max = porcentaje_max;
 
         await ambiente.save()
 
