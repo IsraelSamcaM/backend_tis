@@ -9,29 +9,40 @@ export const getAmbientes = async (req, res) =>{
     }
 }
 
-export const getAmbiente = async (req, res) =>{
+
+export const getAmbiente = async (req, res) => {
     try {
-        const {id_ambiente} = req.params;
-        const ambiente = await Ambiente.findOne({where:{id_ambiente}})
-        if(!ambiente) return res.status(404).json({message: "El ambiente no existe"})
-        res.json(ambiente)
+        const { id_ambiente } = req.params;
+        const ambiente = await Ambiente.findOne({ where: { id_ambiente } });
+        if (!ambiente) return res.status(404).json({ message: "El ambiente no existe" });
+        const idFormateado = String(id_ambiente).padStart(3, '0'); 
+        const ambienteFormateado = {
+            ...ambiente.toJSON(), 
+            id_ambiente: idFormateado
+        };
+        res.json(ambienteFormateado); 
     } catch (error) {
-        return res.status(500).json({message: error.status})
+        return res.status(500).json({ message: error.status });
     }
 }
 
+
+
+
+
 export const createAmbiente = async (req, res) =>{
     //extraer los datos del body
-    const { nombre_ambiente,tipo,capacidad,computadora,ubicacion }= req.body
+    const { nombre_ambiente,tipo,capacidad,disponible,computadora,proyector,ubicacion }= req.body
     try {
         const newAmbiente = await Ambiente.create({
-            nombre_ambiente,tipo,capacidad,computadora,ubicacion
+            nombre_ambiente,tipo,capacidad,disponible,computadora,proyector,ubicacion
         });
         res.json(newAmbiente);
     } catch (error) {
         return res.status(500).json({message: error.status})
     }   
 }
+
 
 export const updateAmbiente = async (req,res)=>{  
     
