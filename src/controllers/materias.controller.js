@@ -1,7 +1,9 @@
 import { Materia } from '../models/Materia.js';
+
 import { Grupo } from '../models/Grupo.js';
 import { Usuario } from '../models/Usuario.js';
-import { sequelize } from '../database/database.js'
+import { sequelize } from '../database/database.js';
+import xlsx from 'xlsx';
 
 export const getMaterias = async (req, res) => {
     try {
@@ -115,3 +117,28 @@ export const cargarMaterias = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+///////////////////LEER ARCHIVO ESCEL//////////////////////
+
+export const uploadExcel = async (req, res) => {
+    console.log('req.file:', req.file);
+    try {
+        // Verifica si se proporcionó un archivo
+        if (!req.file) {
+            return res.status(400).json({ mensaje: 'No se proporcionó ningún archivo' });
+        }
+        // Lee el archivo de Excel
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0]; 
+        const worksheet = workbook.Sheets[sheetName];
+        const excelData = xlsx.utils.sheet_to_json(worksheet);
+        
+        console.log('Datos de Excel:', excelData);
+        
+        return res.json({ excelData });
+    } catch (error) {
+        // Maneja cualquier error que pueda ocurrir durante el proceso de lectura del archivo de Excel
+        return res.status(500).json({ message: 'Error al leer archivo Excel', error: error.message });
+    }
+};
+

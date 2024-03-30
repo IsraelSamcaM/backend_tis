@@ -1,4 +1,5 @@
 import {Ambiente} from '../models/Ambiente.js'
+import {Disponible} from '../models/Disponible.js'
 
 export const getAmbientes = async (req, res) =>{
     try {
@@ -25,6 +26,41 @@ export const getAmbiente = async (req, res) => {
         return res.status(500).json({ message: error.status });
     }
 }
+
+export const createAmbienteCompleto = async (req, res) => {
+    try {
+        const { nombre_ambiente, tipo, capacidad, disponible, computadora, proyector, ubicacion, dia, porcentaje_min, porcentaje_max } = req.body;
+        
+        const ambiente = await Ambiente.create({
+            nombre_ambiente,
+            tipo,
+            capacidad,
+            disponible,
+            computadora,
+            proyector,
+            ubicacion,
+            porcentaje_min,
+            porcentaje_max
+        });
+
+        for (const diaNombre in dia) { 
+            const periodos = dia[diaNombre].periodos; 
+            for (const periodo of periodos) {
+                await Disponible.create({
+                    ambiente_id: ambiente.id_ambiente,
+                    dia: diaNombre, 
+                    periodo_id: periodo.id_periodo
+                    
+                });
+            }
+        }
+        return res.status(201).json({ message: 'Ambiente creado exitosamente' });
+    } catch (error) {
+        console.error('Error al crear ambiente completo:', error);
+        return res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
 
 
 
