@@ -31,6 +31,18 @@ export const Ambiente = sequelize.define('ambientes',{
     },
     ubicacion:{
         type: DataTypes.STRING
+
+    },
+    
+    // foto:{
+    //     type: DataTypes.STRING
+    // },
+    
+    porcentaje_min:{
+        type: DataTypes.INTEGER
+    },
+    porcentaje_max:{
+        type: DataTypes.INTEGER
     },
 },{
     timestamps: false
