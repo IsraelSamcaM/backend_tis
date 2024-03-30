@@ -11,6 +11,7 @@ import gestionesRoutes from "./routes/gestiones.routes.js";
 import materiasRoutes from "./routes/materias.routes.js";
 import periodosRoutes from "./routes/periodos.routes.js";
 import gruposRoutes from "./routes/grupos.routes.js";
+import disponiblesRoutes from "./routes/disponibles.routes.js";
 
 // Middlewares
 
@@ -24,6 +25,7 @@ app.use("/api/gestiones", gestionesRoutes );
 app.use("/api/materias", materiasRoutes );
 app.use("/api/periodos", periodosRoutes );
 app.use("/api/grupos", gruposRoutes );
+app.use("/api/disponibles", disponiblesRoutes );
 
 app.get("/", (req, res) => {
     res.json({ message: {
