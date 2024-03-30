@@ -1,4 +1,7 @@
 import { Materia } from '../models/Materia.js';
+import { Grupo } from '../models/Grupo.js';
+import { Usuario } from '../models/Usuario.js';
+import { sequelize } from '../database/database.js'
 
 export const getMaterias = async (req, res) => {
     try {
@@ -55,4 +58,60 @@ export const deleteMateria = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
+};
+
+
+
+export const cargarMaterias = async (req, res) => {
+  const { id_usuario } = req.params;
+  const datos = req.body;
+
+  try {
+    const usuario = await Usuario.findByPk(id_usuario);
+    if (!usuario) {
+      return res.status(404).json({ message: 'mana existinkichu sistema waway' });
+    }
+    
+    const gruposCreados = [];
+    const transaction = await sequelize.transaction();
+
+    try {
+      for (const dato of datos) {
+        const { materia, nivel, grupo, docente, n_estudiantes } = dato;
+        if (!materia || !nivel || !grupo || !docente || n_estudiantes === undefined) {
+          return res.status(400).json({ message: 'CARAJO FIJATE BIEN EL EXCEL' });
+        }
+        const [materiaInstance, createdMateria] = await Materia.findOrCreate({
+          where: { nombre_materia: dato.materia, nivel_materia: dato.nivel },
+          defaults: { nombre_materia: dato.materia, nivel_materia: dato.nivel },
+          transaction, 
+        });
+
+        if (createdMateria) {
+          console.log(`Se creó una nueva materia: ${materiaInstance.nombre_materia} (${materiaInstance.nivel_materia})`);
+        }
+
+        const grupos = await Grupo.create(
+          {
+            nombre_grupo: dato.grupo,
+            docente: dato.docente,
+            cantidad_est: dato.n_estudiantes,
+            materia_id: materiaInstance.id_materia,
+            usuario_id: usuario.id_usuario,
+          },
+          { transaction } 
+        );
+
+        gruposCreados.push(grupos);
+      }
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      throw error; 
+    }
+
+    res.json(gruposCreados);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
