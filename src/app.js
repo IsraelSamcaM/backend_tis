@@ -32,6 +32,6 @@ app.get("/", (req, res) => {
         title: "¡Bienvenido al backend para TIS!",
         description: "Gracias por usar nuestros servicios."
     }});
-  });
+});
 
 export default app;
