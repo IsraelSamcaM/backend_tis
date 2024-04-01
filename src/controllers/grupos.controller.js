@@ -26,8 +26,8 @@ export const getTablaMaterias = async (req, res) => {
             cantidad_est: grupo.cantidad_est,
             usuario_id: grupo.usuario_id,
             materia_id: grupo.materia_id,
-            nombre_materia: grupo.materia.nombre_materia, 
-            nivel_materia: grupo.materia.nivel_materia
+            nombre_materia: grupo.materia?.nombre_materia || 'Sin materia asignada', 
+            nivel_materia: grupo.materia?.nivel_materia || 'Sin nivel asignado'
 
         }));
         res.json(gruposFormateados);
