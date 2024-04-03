@@ -8,7 +8,7 @@ import { Ambiente  } from '../models/Ambiente.js'; // Asegúrate de importar cor
 export const disponibilidadPorAmbiente = async (req, res) => {
     try {
         const { id_ambiente } = req.params; 
-        
+        const ambiente = await Ambiente.findByPk(id_ambiente);
         const disponibilidad = await Disponible.findAll({
             where: {
                 ambiente_id: id_ambiente 
@@ -23,17 +23,19 @@ export const disponibilidadPorAmbiente = async (req, res) => {
 
         disponibilidad.forEach(entry => {
             const { dia } = entry;
-
             if (!disponibilidadPorDia[dia]) {
                 disponibilidadPorDia[dia] = [];
             }
             disponibilidadPorDia[dia].push(entry);
         });
-
-        return res.status(200).json(disponibilidadPorDia);
+        return res.status(200).json({
+            ambiente: ambiente.toJSON(), // Convertir el objeto a JSON
+            disponibilidadPorDia: disponibilidadPorDia
+        });
     } catch (error) {
         console.error('Error al obtener disponibilidad por ambiente:', error);
         return res.status(500).json({ message: 'Error interno del servidor' });
     }
 };
+
 
