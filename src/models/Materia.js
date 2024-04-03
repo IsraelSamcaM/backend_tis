@@ -16,7 +16,13 @@ export const Materia = sequelize.define('materias',{
         type: DataTypes.STRING
     }
 },{
-    timestamps: false
+    timestamps: false,
+    hooks: {
+        beforeValidate: (materia, options) => {
+            materia.nombre_materia = materia.nombre_materia.toUpperCase();       
+            materia.nivel_materia = materia.nivel_materia.toUpperCase(); 
+        }
+    }
 })
 
 Materia.hasMany(Grupo,{

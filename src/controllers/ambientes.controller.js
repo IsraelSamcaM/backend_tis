@@ -118,6 +118,3 @@ export const deleteAmbiente = async (req, res) => {
     }
 }
 
-export const ivangay = async (req, res) => {
-    res.json({message: "soy ivan gay"})
-}
