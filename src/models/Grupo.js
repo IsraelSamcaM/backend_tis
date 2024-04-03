@@ -22,7 +22,9 @@ export const Grupo = sequelize.define('grupos',{
     timestamps: false,
     hooks: {
         beforeValidate: (grupo, options) => {
-            grupo.nombre_grupo = grupo.nombre_grupo.toUpperCase();         
+            grupo.nombre_grupo = grupo.nombre_grupo.toUpperCase(); 
+            grupo.docente = grupo.docente.toUpperCase(); 
+
         }
     }
 })
