@@ -25,7 +25,13 @@ export const Usuario = sequelize.define('usuarios',{
         type: DataTypes.INTEGER
     }
 },{
-    timestamps: false
+    timestamps: false,
+    hooks: {
+        beforeValidate: (usuario, options) => {
+            usuario.nombre_usuario = usuario.nombre_usuario.toUpperCase();  
+            usuario.tipo_usuario = usuario.tipo_usuario.toUpperCase();        
+        }
+    }
 });
 
 Usuario.hasMany(Grupo,{

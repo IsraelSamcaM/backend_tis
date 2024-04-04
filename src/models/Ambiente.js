@@ -45,7 +45,12 @@ export const Ambiente = sequelize.define('ambientes',{
         type: DataTypes.INTEGER
     },
 },{
-    timestamps: false
+    timestamps: false,
+    hooks: {
+        beforeValidate: (ambiente, options) => {
+            ambiente.nombre_ambiente = ambiente.nombre_ambiente.toUpperCase();       
+        }
+    }
 });
 
 Ambiente.hasMany(Disponible,{

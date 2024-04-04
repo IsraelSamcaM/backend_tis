@@ -1,5 +1,6 @@
 import { Usuario } from '../models/Usuario.js';
 import { Grupo } from '../models/Grupo.js'; // Asegúrate de importar el modelo de Grupo si lo necesitas
+import { Materia } from '../models/Materia.js';
 
 export const getUsuarios = async (req, res) => {
     try {
@@ -69,3 +70,31 @@ export const getUsuarioGrupo = async (req, res) =>{
     const grupos = await Grupo.findAll({where:{usuario_id: id_usuario}})
     res.json(grupos)
 }
+
+export const getMateriasGrupos = async (req, res) => {
+    const { id_usuario } = req.params;
+
+    try {
+        const gruposUsuario = await Grupo.findAll({
+            where: { usuario_id: id_usuario },
+            include: [
+                {
+                    model: Materia,
+                    attributes: ['nombre_materia']
+                }
+            ],
+            attributes: ['nombre_grupo']
+        });
+
+        if (!gruposUsuario || gruposUsuario.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado o no tiene grupos asociados' });
+        }
+
+        res.json(gruposUsuario);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+  
