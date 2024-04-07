@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { disponibilidadPorAmbiente} from '../controllers/disponibles.controller.js'
+import {  obtenerDisponibilidadPorAmbiente} from '../controllers/disponibles.controller.js'
 
 const router = Router();
 
-router.get('/ambiente/:id_ambiente', disponibilidadPorAmbiente)
+router.get('/ambiente/:id_ambiente', obtenerDisponibilidadPorAmbiente)
+
 
 export default router
