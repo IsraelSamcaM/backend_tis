@@ -83,18 +83,25 @@ export const getMateriasGrupos = async (req, res) => {
                     attributes: ['nombre_materia']
                 }
             ],
-            attributes: ['nombre_grupo']
+            attributes: ['id_grupo', 'nombre_grupo', 'materia.nombre_materia']
         });
 
         if (!gruposUsuario || gruposUsuario.length === 0) {
             return res.status(404).json({ message: 'Usuario no encontrado o no tiene grupos asociados' });
         }
 
-        res.json(gruposUsuario);
+        const gruposConMateria = gruposUsuario.map(grupo => ({
+            id_grupo: grupo.id_grupo,
+            nombre_grupo: grupo.nombre_grupo,
+            nombre_materia: grupo.materia ? grupo.materia.nombre_materia : null
+        }));
+
+        res.json(gruposConMateria);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
 
   

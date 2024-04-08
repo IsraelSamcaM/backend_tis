@@ -15,7 +15,7 @@ import { sequelize } from "./database/database.js";
 
   
 async function main() {
-  //await sequelize.sync({force: false});
+//  await sequelize.sync({alter: true});
   app.listen(4000);
   console.log("Server running on port localhost:4000");
 }
