@@ -20,6 +20,9 @@ export const Apertura = sequelize.define('aperturas',{
     reserva_fin:{
         type: DataTypes.TIME
     },
+    registro_apertura:{
+        type: DataTypes.DATE
+    }
 },{
     timestamps: false
 });
