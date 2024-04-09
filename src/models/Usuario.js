@@ -1,6 +1,7 @@
 import {DataTypes} from 'sequelize'
 import { sequelize } from '../database/database.js'
 import { Grupo } from './Grupo.js' 
+import { toDefaultValue } from 'sequelize/lib/utils';
 
 
 export const Usuario = sequelize.define('usuarios',{
@@ -23,6 +24,10 @@ export const Usuario = sequelize.define('usuarios',{
     },
     codsiss:{
         type: DataTypes.INTEGER
+    },
+    disponible:{
+        type: DataTypes.BOOLEAN,
+        defaultValue:true 
     }
 },{
     timestamps: false,
