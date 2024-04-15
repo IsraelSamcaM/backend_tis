@@ -8,6 +8,12 @@ export const Reserva = sequelize.define('reservas',{
         primaryKey: true,
         autoIncrement: true
     },
+    motivo:{
+        type: DataTypes.STRING
+    },
+    fecha_reserva:{
+        type: DataTypes.DATE
+    },
     hora:{
         type: DataTypes.TIME,
         defaultValue: DataTypes.NOW

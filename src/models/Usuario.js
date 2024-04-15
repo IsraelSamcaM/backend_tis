@@ -1,6 +1,6 @@
 import {DataTypes} from 'sequelize'
 import { sequelize } from '../database/database.js'
-import { Grupo } from './Grupo.js' 
+import { Aux_grupo } from './Aux_grupos.js' 
 import { toDefaultValue } from 'sequelize/lib/utils';
 
 
@@ -39,12 +39,12 @@ export const Usuario = sequelize.define('usuarios',{
     }
 });
 
-Usuario.hasMany(Grupo,{
+Usuario.hasMany(Aux_grupo,{
     foreignKey: 'usuario_id',
     sourceKey: 'id_usuario'
 })
 
-Grupo.belongsTo(Usuario,{
+Aux_grupo.belongsTo(Usuario,{
     foreignKey: 'usuario_id',
     targetId: 'id_usuario'
 })
