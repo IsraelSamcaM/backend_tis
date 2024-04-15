@@ -1,6 +1,7 @@
 import {DataTypes} from 'sequelize'
 import { sequelize } from '../database/database.js'
 import { Reserva } from './Reserva.js';
+import { Tipo_usuario } from './Tipo_usuario.js';
 
 export const Apertura = sequelize.define('aperturas',{
     id_apertura:{
@@ -33,6 +34,17 @@ Apertura.hasMany(Reserva,{
 })
 
 Reserva.belongsTo(Apertura,{
+    foreignKey: 'apertura_id',
+    targetId: 'id_apertura'
+})
+
+
+Apertura.hasMany(Tipo_usuario,{
+    foreignKey: 'apertura_id',
+    sourceKey: 'id_apertura'
+})
+
+Tipo_usuario.belongsTo(Apertura,{
     foreignKey: 'apertura_id',
     targetId: 'id_apertura'
 })
