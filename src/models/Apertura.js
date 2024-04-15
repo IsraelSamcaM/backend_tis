@@ -8,6 +8,9 @@ export const Apertura = sequelize.define('aperturas',{
         primaryKey: true,
         autoIncrement: true
     },
+    motivo:{
+        type: DataTypes.STRING
+    },
     apertura_inicio:{
         type: DataTypes.DATE
     },
