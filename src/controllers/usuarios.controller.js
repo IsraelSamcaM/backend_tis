@@ -1,6 +1,7 @@
 import { Usuario } from '../models/Usuario.js';
 import { Grupo } from '../models/Grupo.js'; // Asegúrate de importar el modelo de Grupo si lo necesitas
 import { Materia } from '../models/Materia.js';
+import { Aux_grupo } from '../models/Aux_grupos.js';
 
 export const getUsuarios = async (req, res) => {
     try {
@@ -71,37 +72,84 @@ export const getUsuarioGrupo = async (req, res) =>{
     res.json(grupos)
 }
 
+// export const getMateriasGrupos = async (req, res) => {
+//     const { id_usuario } = req.params;
+
+//     try {
+//         const gruposUsuario = await Grupo.findAll({
+//             where: { usuario_id: id_usuario },
+//             include: [
+//                 {
+//                     model: Materia,
+//                     attributes: ['nombre_materia']
+//                 }
+//             ],
+//             attributes: ['id_grupo', 'nombre_grupo', 'materia.nombre_materia']
+//         });
+
+//         if (!gruposUsuario || gruposUsuario.length === 0) {
+//             return res.status(404).json({ message: 'Usuario no encontrado o no tiene grupos asociados' });
+//         }
+
+//         const gruposConMateria = gruposUsuario.map(grupo => ({
+//             id_grupo: grupo.id_grupo,
+//             nombre_grupo: grupo.nombre_grupo,
+//             nombre_materia: grupo.materia ? grupo.materia.nombre_materia : null
+//         }));
+
+//         res.json(gruposConMateria);
+//     } catch (error) {
+//         return res.status(500).json({ message: error.message });
+//     }
+// };
+
+
 export const getMateriasGrupos = async (req, res) => {
     const { id_usuario } = req.params;
 
     try {
-        const gruposUsuario = await Grupo.findAll({
-            where: { usuario_id: id_usuario },
-            include: [
-                {
-                    model: Materia,
-                    attributes: ['nombre_materia']
-                }
-            ],
-            attributes: ['id_grupo', 'nombre_grupo', 'materia.nombre_materia']
+        const usuario = await Usuario.findOne({
+            where: { id_usuario },
+            attributes: ['id_usuario', 'nombre_usuario', 'contrasenia_usuario', 'email_usuario', 'tipo_usuario', 'codsiss', 'disponible'],
+            include: [{
+                model: Aux_grupo,
+                include: [{
+                    model: Grupo,
+                    include: [{
+                        model: Materia,
+                        attributes: ['nombre_materia']
+                    }],
+                    attributes: ['id_grupo', 'nombre_grupo', 'cantidad_est'],
+                }],
+                attributes: ['id_aux_grupo']
+            }]
         });
 
-        if (!gruposUsuario || gruposUsuario.length === 0) {
-            return res.status(404).json({ message: 'Usuario no encontrado o no tiene grupos asociados' });
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        const gruposConMateria = gruposUsuario.map(grupo => ({
-            id_grupo: grupo.id_grupo,
-            nombre_grupo: grupo.nombre_grupo,
-            nombre_materia: grupo.materia ? grupo.materia.nombre_materia : null
+        const gruposConMateria = usuario.aux_grupos.map(auxGrupo => ({
+            id_aux_grupo: auxGrupo.id_aux_grupo,
+            id_grupo: auxGrupo.grupo.id_grupo,
+            nombre_grupo: auxGrupo.grupo.nombre_grupo,
+            nombre_materia: auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null,
+            cantidad_est: auxGrupo.grupo.cantidad_est
         }));
 
-        res.json(gruposConMateria);
+        res.json({
+            id_usuario: usuario.id_usuario,
+            nombre_usuario: usuario.nombre_usuario,
+            contrasenia_usuario: usuario.contrasenia_usuario,
+            email_usuario: usuario.email_usuario,
+            tipo_usuario: usuario.tipo_usuario,
+            codsiss: usuario.codsiss,
+            disponible: usuario.disponible,
+            'materia-grupo': gruposConMateria
+        });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
-
-
 
   

@@ -1,5 +1,7 @@
 import { Grupo } from '../models/Grupo.js';
 import { Materia } from '../models/Materia.js';
+import { Usuario } from '../models/Usuario.js';
+import { Aux_grupo } from '../models/Aux_grupos.js';
 
 export const getGrupos = async (req, res) => {
     try {
@@ -35,6 +37,12 @@ export const getTablaMaterias = async (req, res) => {
         return res.status(500).json({message: error.message });
     }
 };
+
+
+
+
+
+
 
 export const getGrupo = async (req, res) => {
     try {
