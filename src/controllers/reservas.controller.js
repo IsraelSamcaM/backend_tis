@@ -2,30 +2,20 @@ import { Reserva } from '../models/Reserva.js';
 import { Ambiente } from '../models/Ambiente.js';
 import { Apertura } from '../models/Apertura.js';
 import { Disponible } from '../models/Disponible.js';
+import { Periodo } from '../models/Periodo.js';
 import { where } from 'sequelize';
 
 
 
 
-export const getReservas = async (req, res) => {
-
-    const data = {
-        "tipo_ambiente": "aula comun",
-        "cantidad_est": 200,
-        "fecha_reserva":"2024-04-16T12:00:00.000Z",
-        "periodos": [
-          {"id_periodo": 1},
-          {"id_periodo": 7},
-          {"id_periodo": 3}
-        ]
-      };
-
-
+export const getReservas = async (req, res) => {  
     try {
-
+        const data = req.body
         const tipoAmbiente = data.tipo_ambiente
         const cantidadEst = data.cantidad_est
-        const fecha = data.fecha_reserva
+        const fechaInicial = data.fecha_reserva
+        const fecha = fechaInicial+ "T12:00:00.000Z"
+        console.log(fecha)
 
         const periodosArray = data.periodos.map(periodos => periodos.id_periodo)
         console.log(periodosArray)
@@ -39,12 +29,14 @@ export const getReservas = async (req, res) => {
 
         const disponiblesAmbienteDia = await obtenerDisponibles(arrayIdsAmbientes, dia ,periodosArray )
 
-        // const idsDisponiblesOcupados = await Reserva.findAll({
-        //     attributes:['id_reserva', 'disponible_id'],
-        //     where: { fecha_reserva: fecha }
-        // })
+        const idsExcluir = await obtenerOcupados(fecha)
+        console.log(idsExcluir)
+
+        const resultadoFiltrado = disponiblesAmbienteDia.filter(disponible => !idsExcluir.includes(disponible.id_disponible))
+
+        const ambientesDisponibles = await obtenerDetallesReservas(resultadoFiltrado, fechaInicial)
         
-        res.json(disponiblesAmbienteDia);
+        res.json(ambientesDisponibles);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -53,7 +45,7 @@ export const getReservas = async (req, res) => {
 const mapearAmbientes = (ambientes, cantidadEst, tipoAmbiente) => {
     return ambientes
         .map(ambiente => {
-            const { id_ambiente, tipo, capacidad, porcentaje_min, porcentaje_max } = ambiente;
+            const { id_ambiente, tipo, capacidad, disponible ,porcentaje_min, porcentaje_max } = ambiente;
             const capacidad_max = Math.floor(capacidad * (porcentaje_max / 100));
             const capacidad_min = Math.floor(capacidad * (porcentaje_min / 100));
 
@@ -103,4 +95,48 @@ const obtenerDisponibles = async (arrayIdsAmbientes, diaFecha, arrayIdsPeriodos)
     //console.log(disponibles)
     return disponibles
 
+};
+
+const obtenerOcupados = async (fechaReserva) => {
+    const reservas = await Reserva.findAll({
+        attributes:['disponible_id'],
+        where: {
+            fecha_reserva: fechaReserva,
+        }
+    });
+    const ocupados = reservas.map(reserva => reserva.disponible_id)
+    return ocupados
+};
+
+const obtenerDetallesReservas = async (disponiblesAmbienteDia, fechaReserva) => {
+    const detallesReservas = [];
+
+    for (const disponible of disponiblesAmbienteDia) {
+        const periodo = await Periodo.findOne({
+            where: { id_periodo: disponible.periodo_id }
+        });
+
+        const ambiente = await Ambiente.findOne({
+            where: { id_ambiente: disponible.ambiente_id }
+        });
+
+        detallesReservas.push({
+            id_disponible: disponible.id_disponible,
+            dia: disponible.dia,
+            periodo_id: disponible.periodo_id,
+
+            nombre_periodo: periodo.nombre_periodo,
+            hora_inicio: periodo.hora_inicio,
+            hora_fin: periodo.hora_fin,
+
+            ambiente_id: disponible.ambiente_id,
+            nombre_ambiente: ambiente.nombre_ambiente,
+            tipo_ambiente: ambiente.tipo,
+            capacidad_ambiente: ambiente.capacidad,
+            estado: "Habilitado", 
+            fecha: fechaReserva
+        });
+    }
+
+    return detallesReservas;
 };
