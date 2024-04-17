@@ -4,6 +4,12 @@ import cors from "cors"
 
 const app = express();
 
+var corsOptions = {
+    origin: "*"
+}
+
+app.use(cors(corsOptions));
+
 //Import routes
 import ambientesRoutes from "./routes/ambientes.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
@@ -18,7 +24,10 @@ import reservasRoutes from "./routes/reservas.routes.js";
 // Middlewares
 
 app.use(express.json());
+
 app.use(cors());
+
+app.use(express.urlencoded({ extended: true }));
 // Routes
 //app.use(ambientesRoutes);
 app.use("/api/ambientes", ambientesRoutes );
