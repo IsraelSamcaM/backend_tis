@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getReservas,} from '../controllers/reservas.controller.js';
+import { getReservas, getListaReservas } from '../controllers/reservas.controller.js';
 
 const router = Router();
 
+router.get('/lista_reservas', getListaReservas);
 router.post('/', getReservas);
 
 
