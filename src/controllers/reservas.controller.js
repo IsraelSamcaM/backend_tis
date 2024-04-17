@@ -3,12 +3,43 @@ import { Ambiente } from '../models/Ambiente.js';
 import { Apertura } from '../models/Apertura.js';
 import { Disponible } from '../models/Disponible.js';
 import { Periodo } from '../models/Periodo.js';
-import { where } from 'sequelize';
+import { Auxiliar_reserva } from '../models/Auxiliar_reserva.js';
 
 
 
+// {
+//     "id_disponible": 5,
+//     "fecha_reserva":"2024-04-17",
+//     "motivo": "Cositas",
+//     "id_aux_grupo": 2,
+//     "id_apertura": 2 //por defecto
+//   }
+  
+export const createReserva = async (req, res) => {
 
-export const getReservas = async (req, res) => {  
+    const { id_disponible, fecha_reserva,motivo,id_aux_grupo,id_apertura } = req.body;
+    try {
+        const newReserva = await Reserva.create({ 
+            disponible_id: id_disponible, 
+            fecha_reserva: fecha_reserva + "T00:00:00.000Z",
+            motivo: motivo,
+            apertura_id: id_apertura
+        });
+
+        const newAuxReserva = await Auxiliar_reserva.create({
+            reserva_id: newReserva.id_reserva,
+            aux_grupo_id: id_aux_grupo
+        })
+
+
+        res.json(newReserva);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+export const getTablaDisponibles = async (req, res) => {  
     try {
         const data = req.body
         const tipoAmbiente = data.tipo_ambiente

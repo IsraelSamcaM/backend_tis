@@ -16,11 +16,11 @@ export const Reserva = sequelize.define('reservas',{
     },
     hora:{
         type: DataTypes.TIME,
-        defaultValue: DataTypes.NOW
+        defaultValue: sequelize.literal('CURRENT_TIME') 
     },
     fecha:{
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     },
     estado:{
         type: DataTypes.BOOLEAN,
