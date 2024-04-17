@@ -3,8 +3,11 @@ import {Disponible} from '../models/Disponible.js'
 
 export const getAmbientes = async (req, res) =>{
     try {
-        const ambientes = await Ambiente.findAll({ raw: true });
-
+        const ambientes = await Ambiente.findAll({
+            raw: true,
+            order: [['id_ambiente', 'DESC']]
+        });
+        
         const ambientesFormateados = ambientes.map(ambiente => {
             const idFormateado = ambiente.id_ambiente.toString().padStart(3, '0');
             return {
