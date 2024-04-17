@@ -195,7 +195,8 @@ export const getListaReservas = async (req, res) => {
             JOIN aux_grupos ag ON ar.aux_grupo_id = ag.id_aux_grupo
             JOIN grupos g ON g.id_grupo = ag.grupo_id
             JOIN materias m ON g.materia_id = m.id_materia
-            JOIN usuarios u ON ag.usuario_id = u.id_usuario`
+            JOIN usuarios u ON ag.usuario_id = u.id_usuario
+            ORDER BY R.id_reserva DESC`
         , {
             type: sequelize.QueryTypes.SELECT // Indica el tipo de consulta que estás ejecutando  
         });
