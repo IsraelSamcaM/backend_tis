@@ -11,13 +11,13 @@ import { sequelize } from "../database/database.js"
 //     "id_disponible": 5,
 //     "fecha_reserva":"2024-04-17",
 //     "motivo": "Cositas",
-//     "id_aux_grupo": 2,
+//     "listaGrupos": [1,2,3]
 //     "id_apertura": 2 //por defecto
 //   }
   
 export const createReserva = async (req, res) => {
 
-    const { id_disponible, fecha_reserva,motivo,id_aux_grupo,id_apertura } = req.body;
+    const { id_disponible, fecha_reserva,motivo,listaGrupos,id_apertura } = req.body;
     try {
         const newReserva = await Reserva.create({ 
             disponible_id: id_disponible, 
@@ -26,11 +26,13 @@ export const createReserva = async (req, res) => {
             apertura_id: id_apertura
         });
 
-        const newAuxReserva = await Auxiliar_reserva.create({
-            reserva_id: newReserva.id_reserva,
-            aux_grupo_id: id_aux_grupo
-        })
 
+        for (const grupoId of listaGrupos) {
+            await Auxiliar_reserva.create({
+                reserva_id: newReserva.id_reserva,
+                aux_grupo_id: grupoId
+            });
+        }
 
         res.json(newReserva);
     } catch (error) {
