@@ -68,8 +68,15 @@ export const getTablaDisponibles = async (req, res) => {
         const resultadoFiltrado = disponiblesAmbienteDia.filter(disponible => !idsExcluir.includes(disponible.id_disponible))
 
         const ambientesDisponibles = await obtenerDetallesReservas(resultadoFiltrado, fechaInicial)
+
+        const ambientesConIdTabla = ambientesDisponibles.map(ambiente => {
+            return {
+                ...ambiente,
+                id_tabla: String(ambiente.id_disponible).padStart(3, '0')
+            };
+        });
         
-        res.json(ambientesDisponibles);
+        res.json(ambientesConIdTabla);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
