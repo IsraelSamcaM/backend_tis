@@ -1,5 +1,5 @@
-import app from "./app.js";
-import { sequelize } from "./database/database.js";
+import app from "./src/app.js";
+import { sequelize } from "./src/database/database.js";
 
 // import './models/Ambiente.js'
 // import './models/Apertura.js'
