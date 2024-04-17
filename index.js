@@ -20,6 +20,10 @@ async function main() {
   //await sequelize.sync({alter: true});
   app.listen(4000);
   console.log("Server running on port localhost:4000");
+  app.get("/", (req, res) => {
+    res.json({ message: "Welcome to JOS83 application." });
+  });
+  
 }
 
 main();
