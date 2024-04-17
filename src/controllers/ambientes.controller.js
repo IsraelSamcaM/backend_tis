@@ -3,12 +3,21 @@ import {Disponible} from '../models/Disponible.js'
 
 export const getAmbientes = async (req, res) =>{
     try {
-        const ambientes = await Ambiente.findAll()
-        res.json(ambientes)
+        const ambientes = await Ambiente.findAll({ raw: true });
+
+        const ambientesFormateados = ambientes.map(ambiente => {
+            const idFormateado = ambiente.id_ambiente.toString().padStart(3, '0');
+            return {
+                ...ambiente,
+                id_ambiente_tabla : idFormateado
+            };
+        });
+
+        res.json(ambientesFormateados);
     } catch (error) {
-        return res.status(500).json({message: error.status})
+        return res.status(500).json({ message: error.status });
     }
-}
+};
 
 
 export const getAmbiente = async (req, res) => {
