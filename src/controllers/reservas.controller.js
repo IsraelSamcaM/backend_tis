@@ -1,10 +1,10 @@
 import { Reserva } from '../models/Reserva.js';
 import { Ambiente } from '../models/Ambiente.js';
-import { Apertura } from '../models/Apertura.js';
 import { Disponible } from '../models/Disponible.js';
 import { Periodo } from '../models/Periodo.js';
 import { Auxiliar_reserva } from '../models/Auxiliar_reserva.js';
 
+import { sequelize } from "../database/database.js"
 
 
 // {
@@ -170,4 +170,29 @@ const obtenerDetallesReservas = async (disponiblesAmbienteDia, fechaReserva) => 
     }
 
     return detallesReservas;
+};
+
+
+export const getListaReservas = async (req, res) => {
+    try {
+        const result = await sequelize.query(`
+            SELECT R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
+                r.fecha_reserva, p.hora_inicio, p.hora_fin, g.nombre_grupo, M.nombre_materia,  A.nombre_ambiente 
+            FROM ambientes A
+            JOIN disponibles D ON A.id_ambiente = D.ambiente_id
+            JOIN periodos P ON D.periodo_id = P.id_periodo
+            JOIN reservas R ON r.disponible_id = D.id_disponible
+            JOIN auxiliar_reservas ar ON ar.reserva_id = R.id_reserva
+            JOIN aux_grupos ag ON ar.aux_grupo_id = ag.id_aux_grupo
+            JOIN grupos g ON g.id_grupo = ag.grupo_id
+            JOIN materias m ON g.materia_id = m.id_materia
+            JOIN usuarios u ON ag.usuario_id = u.id_usuario`
+        , {
+            type: sequelize.QueryTypes.SELECT // Indica el tipo de consulta que estás ejecutando  
+        });
+
+        res.json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 };
