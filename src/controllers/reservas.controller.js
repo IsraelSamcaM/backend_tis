@@ -210,7 +210,8 @@ export const getListaReservas = async (req, res) => {
     try {
         const result = await sequelize.query(`
                 SELECT R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
-                r.fecha_reserva, p.hora_inicio, p.hora_fin, g.nombre_grupo, 
+                r.fecha_reserva, p.hora_inicio, p.hora_fin, 
+                string_agg(g.nombre_grupo, ', ') AS nombre_grupo, 
                 string_agg(m.nombre_materia, ', ') AS nombre_materia,
                 A.nombre_ambiente 
                 FROM ambientes A
@@ -223,7 +224,7 @@ export const getListaReservas = async (req, res) => {
                 JOIN materias m ON g.materia_id = m.id_materia
                 JOIN usuarios u ON ag.usuario_id = u.id_usuario
                 GROUP BY R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
-                    r.fecha_reserva, p.hora_inicio, p.hora_fin, g.nombre_grupo, A.nombre_ambiente
+                    r.fecha_reserva, p.hora_inicio, p.hora_fin, A.nombre_ambiente
                 ORDER BY R.id_reserva DESC;`
             , {
                 type: sequelize.QueryTypes.SELECT
@@ -233,6 +234,7 @@ export const getListaReservas = async (req, res) => {
             const existingItem = acc.find(item => item.id_reserva === current.id_reserva);
             if (existingItem) {
                 existingItem.nombre_materia += `, ${current.nombre_materia}`;
+                existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
             } else {
                 acc.push(current);
             }
@@ -244,3 +246,4 @@ export const getListaReservas = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
