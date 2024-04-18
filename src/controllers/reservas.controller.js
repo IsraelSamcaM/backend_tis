@@ -48,6 +48,7 @@ export const getTablaDisponibles = async (req, res) => {
         const cantidadEst = data.cantidad_est
         const fechaInicial = data.fecha_reserva
         const fecha = fechaInicial + "T12:00:00.000Z"
+
         console.log(fecha)
 
         const periodosArray = data.periodos.map(periodos => periodos.id_periodo)
@@ -206,10 +207,53 @@ const obtenerDetallesReservas = async (disponiblesAmbienteDia, fechaReserva) => 
 //     }
 // };
 
-export const getListaReservas = async (req, res) => {
+export const getListaReservas2 = async (req, res) => {
     try {
         const result = await sequelize.query(`
                 SELECT R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
+                r.fecha_reserva, p.hora_inicio, p.hora_fin, 
+                string_agg(g.nombre_grupo, ', ') AS nombre_grupo, 
+                string_agg(m.nombre_materia, ', ') AS nombre_materia,
+                A.nombre_ambiente 
+                FROM ambientes A
+                JOIN disponibles D ON A.id_ambiente = D.ambiente_id
+                JOIN periodos P ON D.periodo_id = P.id_periodo
+                JOIN reservas R ON r.disponible_id = D.id_disponible
+                JOIN auxiliar_reservas ar ON ar.reserva_id = R.id_reserva
+                JOIN aux_grupos ag ON ar.aux_grupo_id = ag.id_aux_grupo
+                JOIN grupos g ON g.id_grupo = ag.grupo_id
+                JOIN materias m ON g.materia_id = m.id_materia
+                JOIN usuarios u ON ag.usuario_id = u.id_usuario
+                GROUP BY R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
+                    r.fecha_reserva, p.hora_inicio, p.hora_fin, A.nombre_ambiente
+                ORDER BY R.id_reserva DESC;`
+            , {
+                type: sequelize.QueryTypes.SELECT
+            });
+
+        const combinedResult = result.reduce((acc, current) => {
+            const existingItem = acc.find(item => item.id_reserva === current.id_reserva);
+            if (existingItem) {
+                existingItem.nombre_materia += `, ${current.nombre_materia}`;
+                existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
+            } else {
+                acc.push(current);
+            }
+            return acc;
+        }, []);
+
+        
+
+        res.json(combinedResult);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+export const getListaReservas = async (req, res) => {
+    try {
+        const result = await sequelize.query(`
+                SELECT LPAD(R.id_reserva::text, 3, '0') as id_reserva, u.nombre_usuario, u.tipo_usuario, 
                 r.fecha_reserva, p.hora_inicio, p.hora_fin, 
                 string_agg(g.nombre_grupo, ', ') AS nombre_grupo, 
                 string_agg(m.nombre_materia, ', ') AS nombre_materia,
@@ -246,4 +290,5 @@ export const getListaReservas = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
