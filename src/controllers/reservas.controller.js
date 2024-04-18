@@ -14,13 +14,13 @@ import { sequelize } from "../database/database.js"
 //     "listaGrupos": [1,2,3]
 //     "id_apertura": 2 //por defecto
 //   }
-  
+
 export const createReserva = async (req, res) => {
 
-    const { id_disponible, fecha_reserva,motivo,listaGrupos,id_apertura } = req.body;
+    const { id_disponible, fecha_reserva, motivo, listaGrupos, id_apertura } = req.body;
     try {
-        const newReserva = await Reserva.create({ 
-            disponible_id: id_disponible, 
+        const newReserva = await Reserva.create({
+            disponible_id: id_disponible,
             fecha_reserva: fecha_reserva + "T00:00:00.000Z",
             motivo: motivo,
             apertura_id: id_apertura
@@ -41,13 +41,13 @@ export const createReserva = async (req, res) => {
 };
 
 
-export const getTablaDisponibles = async (req, res) => {  
+export const getTablaDisponibles = async (req, res) => {
     try {
         const data = req.body
         const tipoAmbiente = data.tipo_ambiente
         const cantidadEst = data.cantidad_est
         const fechaInicial = data.fecha_reserva
-        const fecha = fechaInicial+ "T12:00:00.000Z"
+        const fecha = fechaInicial + "T12:00:00.000Z"
         console.log(fecha)
 
         const periodosArray = data.periodos.map(periodos => periodos.id_periodo)
@@ -57,10 +57,10 @@ export const getTablaDisponibles = async (req, res) => {
         const dia = convertirDiaHabil(formatoFecha)
 
         const ambientes = await Ambiente.findAll();
-        const arrayIdsAmbientes = mapearAmbientes(ambientes,cantidadEst,tipoAmbiente);
+        const arrayIdsAmbientes = mapearAmbientes(ambientes, cantidadEst, tipoAmbiente);
         console.log(arrayIdsAmbientes)
 
-        const disponiblesAmbienteDia = await obtenerDisponibles(arrayIdsAmbientes, dia ,periodosArray )
+        const disponiblesAmbienteDia = await obtenerDisponibles(arrayIdsAmbientes, dia, periodosArray)
 
         const idsExcluir = await obtenerOcupados(fecha)
         console.log(idsExcluir)
@@ -75,7 +75,7 @@ export const getTablaDisponibles = async (req, res) => {
                 id_tabla: String(ambiente.id_disponible).padStart(3, '0')
             };
         });
-        
+
         res.json(ambientesConIdTabla);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -85,7 +85,7 @@ export const getTablaDisponibles = async (req, res) => {
 const mapearAmbientes = (ambientes, cantidadEst, tipoAmbiente) => {
     return ambientes
         .map(ambiente => {
-            const { id_ambiente, tipo, capacidad, disponible ,porcentaje_min, porcentaje_max } = ambiente;
+            const { id_ambiente, tipo, capacidad, disponible, porcentaje_min, porcentaje_max } = ambiente;
             const capacidad_max = Math.floor(capacidad * (porcentaje_max / 100));
             const capacidad_min = Math.floor(capacidad * (porcentaje_min / 100));
 
@@ -106,19 +106,19 @@ const mapearAmbientes = (ambientes, cantidadEst, tipoAmbiente) => {
 const convertirDiaHabil = (fechaString) => {
     const partesFecha = fechaString.split('-');
     const dia = parseInt(partesFecha[0], 10);
-    const mes = parseInt(partesFecha[1], 10) - 1; 
+    const mes = parseInt(partesFecha[1], 10) - 1;
     const año = parseInt(partesFecha[2], 10);
     const fecha = new Date(año, mes, dia);
-    const diasSemana = ['domingo','lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
     return diasSemana[fecha.getDay()];
 };
 
 const obtenerParteFecha = (fechaString) => {
     const fecha = new Date(fechaString);
-    const dia = fecha.getDate().toString().padStart(2, '0'); 
-    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); 
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
     const año = fecha.getFullYear();
-    
+
     return `${dia}-${mes}-${año}`;
 };
 
@@ -131,7 +131,7 @@ const obtenerDisponibles = async (arrayIdsAmbientes, diaFecha, arrayIdsPeriodos)
             periodo_id: arrayIdsPeriodos,
         }
     });
-    
+
     //console.log(disponibles)
     return disponibles
 
@@ -139,7 +139,7 @@ const obtenerDisponibles = async (arrayIdsAmbientes, diaFecha, arrayIdsPeriodos)
 
 const obtenerOcupados = async (fechaReserva) => {
     const reservas = await Reserva.findAll({
-        attributes:['disponible_id'],
+        attributes: ['disponible_id'],
         where: {
             fecha_reserva: fechaReserva,
         }
@@ -173,7 +173,7 @@ const obtenerDetallesReservas = async (disponiblesAmbienteDia, fechaReserva) => 
             nombre_ambiente: ambiente.nombre_ambiente,
             tipo_ambiente: ambiente.tipo,
             capacidad_ambiente: ambiente.capacidad,
-            estado: "Habilitado", 
+            estado: "Habilitado",
             fecha: fechaReserva
         });
     }
@@ -182,26 +182,64 @@ const obtenerDetallesReservas = async (disponiblesAmbienteDia, fechaReserva) => 
 };
 
 
+// export const getListaReservas = async (req, res) => {
+//     try {
+//         const result = await sequelize.query(`
+//             SELECT R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
+//                 r.fecha_reserva, p.hora_inicio, p.hora_fin, g.nombre_grupo, M.nombre_materia,  A.nombre_ambiente 
+//             FROM ambientes A
+//             JOIN disponibles D ON A.id_ambiente = D.ambiente_id
+//             JOIN periodos P ON D.periodo_id = P.id_periodo
+//             JOIN reservas R ON r.disponible_id = D.id_disponible
+//             JOIN auxiliar_reservas ar ON ar.reserva_id = R.id_reserva
+//             JOIN aux_grupos ag ON ar.aux_grupo_id = ag.id_aux_grupo
+//             JOIN grupos g ON g.id_grupo = ag.grupo_id
+//             JOIN materias m ON g.materia_id = m.id_materia
+//             JOIN usuarios u ON ag.usuario_id = u.id_usuario
+//             ORDER BY R.id_reserva DESC`
+//         , {
+//             type: sequelize.QueryTypes.SELECT 
+//         })
+//         res.json(result);
+//     } catch (error) {
+//         return res.status(500).json({ message: error.message });
+//     }
+// };
+
 export const getListaReservas = async (req, res) => {
     try {
         const result = await sequelize.query(`
-            SELECT R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
-                r.fecha_reserva, p.hora_inicio, p.hora_fin, g.nombre_grupo, M.nombre_materia,  A.nombre_ambiente 
-            FROM ambientes A
-            JOIN disponibles D ON A.id_ambiente = D.ambiente_id
-            JOIN periodos P ON D.periodo_id = P.id_periodo
-            JOIN reservas R ON r.disponible_id = D.id_disponible
-            JOIN auxiliar_reservas ar ON ar.reserva_id = R.id_reserva
-            JOIN aux_grupos ag ON ar.aux_grupo_id = ag.id_aux_grupo
-            JOIN grupos g ON g.id_grupo = ag.grupo_id
-            JOIN materias m ON g.materia_id = m.id_materia
-            JOIN usuarios u ON ag.usuario_id = u.id_usuario
-            ORDER BY R.id_reserva DESC`
-        , {
-            type: sequelize.QueryTypes.SELECT // Indica el tipo de consulta que estás ejecutando  
-        });
+                SELECT R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
+                r.fecha_reserva, p.hora_inicio, p.hora_fin, g.nombre_grupo, 
+                string_agg(m.nombre_materia, ', ') AS nombre_materia,
+                A.nombre_ambiente 
+                FROM ambientes A
+                JOIN disponibles D ON A.id_ambiente = D.ambiente_id
+                JOIN periodos P ON D.periodo_id = P.id_periodo
+                JOIN reservas R ON r.disponible_id = D.id_disponible
+                JOIN auxiliar_reservas ar ON ar.reserva_id = R.id_reserva
+                JOIN aux_grupos ag ON ar.aux_grupo_id = ag.id_aux_grupo
+                JOIN grupos g ON g.id_grupo = ag.grupo_id
+                JOIN materias m ON g.materia_id = m.id_materia
+                JOIN usuarios u ON ag.usuario_id = u.id_usuario
+                GROUP BY R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
+                    r.fecha_reserva, p.hora_inicio, p.hora_fin, g.nombre_grupo, A.nombre_ambiente
+                ORDER BY R.id_reserva DESC;`
+            , {
+                type: sequelize.QueryTypes.SELECT
+            });
 
-        res.json(result);
+        const combinedResult = result.reduce((acc, current) => {
+            const existingItem = acc.find(item => item.id_reserva === current.id_reserva);
+            if (existingItem) {
+                existingItem.nombre_materia += `, ${current.nombre_materia}`;
+            } else {
+                acc.push(current);
+            }
+            return acc;
+        }, []);
+
+        res.json(combinedResult);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
