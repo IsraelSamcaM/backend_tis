@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-04-20T20:43:07.903Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="NnY3f6XZ8cdh5efhZcWd" version="24.2.5" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2024-04-20T20:43:30.579Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="TOBasZRl3nAeFWi8w1sj" version="24.2.5" type="github" pages="2">
   <diagram id="R2lEEEUBdFMjLlhIrx00" name="Page-1">
-    <mxGraphModel dx="1719" dy="834" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" extFonts="Permanent Marker^https://fonts.googleapis.com/css?family=Permanent+Marker">
+    <mxGraphModel dx="1415" dy="687" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" extFonts="Permanent Marker^https://fonts.googleapis.com/css?family=Permanent+Marker">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -104,7 +104,12 @@
           <mxGeometry y="30" width="170" height="90" as="geometry" />
         </mxCell>
         <mxCell id="w17pYx3UfT-AEnRCqd25-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0.003;entryY=0.649;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="mKsCjonS9OvZtf7DSqRh-44" target="w17pYx3UfT-AEnRCqd25-2" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1187" y="281" />
+              <mxPoint x="1187" y="135" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="p3Wfwf4MYfczR9eVDflO-8" value="aux_disponibles" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="80" y="20" width="160" height="80" as="geometry" />
