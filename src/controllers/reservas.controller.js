@@ -7,24 +7,25 @@ import { Auxiliar_reserva } from '../models/Auxiliar_reserva.js';
 import { sequelize } from "../database/database.js"
 import { Model } from 'sequelize';
 
-
 // {
-//     "id_disponible": 5,
+//     "id_disponible": 226,
 //     "fecha_reserva":"2024-04-17",
-//     "motivo": "Cositas",
-//     "listaGrupos": [1,2,3]
-//     "id_apertura": 2 //por defecto
+//     "motivo": "mi primera prueba",
+//     "listaGrupos": [1,2,3], 
+//     "id_apertura": 2 , 
+//     "cantidad_total": 123
 //   }
 
 export const createReserva = async (req, res) => {
 
-    const { id_disponible, fecha_reserva, motivo, listaGrupos, id_apertura } = req.body;
+    const { id_disponible, fecha_reserva, motivo, listaGrupos, id_apertura,cantidad_total } = req.body;
     try {
         const newReserva = await Reserva.create({
             disponible_id: id_disponible,
             fecha_reserva: fecha_reserva + "T12:00:00.000Z",
             motivo: motivo,
-            apertura_id: id_apertura
+            apertura_id: id_apertura,
+            cantidad_total: cantidad_total
         });
 
 
@@ -221,7 +222,8 @@ export const getListaReservas = async (req, res) => {
                    string_agg(g.nombre_grupo, ', ') AS nombre_grupo, 
                    string_agg(m.nombre_materia || ' - ' || g.nombre_grupo, ', ') AS nombre_materia,
                    A.nombre_ambiente,
-                   SUM(g.cantidad_est) AS cantidad_est,
+                   R.cantidad_total AS cantidad_est,
+                   SUM(g.cantidad_est) AS cantidad_sumada,
                    A.capacidad,
                    A.porcentaje_min,
                    A.porcentaje_max,
@@ -248,7 +250,7 @@ export const getListaReservas = async (req, res) => {
             if (existingItem) {
                 existingItem.nombre_materia += `, ${current.nombre_materia}`;
                 existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
-                existingItem.cantidad_est += current.cantidad_est;
+                existingItem.cantidad_sumada += current.cantidad_sumada;
             } else {
                 current.min_cap_max = `${current.min_capacidad} - ${current.capacidad} - ${current.max_capacidad}`;
                 acc.push(current);
