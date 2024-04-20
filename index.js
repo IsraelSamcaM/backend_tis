@@ -10,7 +10,7 @@ import { sequelize } from "./src/database/database.js";
 // import './models/Grupo.js'
 // import './models/Materia.js'
 // import './models/Periodo.js'
-// import './models/Reserva.js'
+//import './src/models/Reserva.js'
 // import './models/Tipo_usuario.js'
 // import './models/Usuario.js'
 
