@@ -1,5 +1,7 @@
 import { Grupo } from '../models/Grupo.js';
 import { Materia } from '../models/Materia.js';
+import { Usuario } from '../models/Usuario.js';
+import { Aux_grupo } from '../models/Aux_grupos.js';
 
 export const getGrupos = async (req, res) => {
     try {
@@ -30,11 +32,28 @@ export const getTablaMaterias = async (req, res) => {
             nivel_materia: grupo.materia?.nivel_materia || 'Sin nivel asignado'
 
         }));
+
+        gruposFormateados.sort((a, b) => {
+            if (a.nivel_materia > b.nivel_materia) return 1;
+            if (a.nivel_materia < b.nivel_materia) return -1;
+
+            if (a.nombre_materia > b.nombre_materia) return 1;
+            if (a.nombre_materia < b.nombre_materia) return -1;
+
+            return 0;
+        });
+
         res.json(gruposFormateados);
     } catch (error){
         return res.status(500).json({message: error.message });
     }
 };
+
+
+
+
+
+
 
 export const getGrupo = async (req, res) => {
     try {

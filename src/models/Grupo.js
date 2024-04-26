@@ -1,6 +1,7 @@
 import {DataTypes} from 'sequelize'
 import { sequelize } from '../database/database.js'
 import { Auxiliar_reserva } from './Auxiliar_reserva.js' 
+import { Aux_grupo } from './Aux_grupos.js' 
 
 
 export const Grupo = sequelize.define('grupos',{
@@ -30,12 +31,14 @@ export const Grupo = sequelize.define('grupos',{
 })
 
 
-Grupo.hasMany(Auxiliar_reserva,{
+
+
+Grupo.hasMany(Aux_grupo,{
     foreignKey: 'grupo_id',
     sourceKey: 'id_grupo'
 })
 
-Auxiliar_reserva.belongsTo(Grupo,{
+Aux_grupo.belongsTo(Grupo,{
     foreignKey: 'grupo_id',
     targetId: 'id_grupo'
 })

@@ -9,21 +9,58 @@ export const getAperturas = async (req, res) => {
     }
 };
 
+
+
+// export const getApertura = async (req, res) => {
+//     try {
+//         const { id_apertura } = req.params;
+//         const apertura = await Apertura.findOne({ where: { id_apertura } });
+//         if (!apertura) return res.status(404).json({ message: "La apertura no existe" });
+//         res.json(apertura);
+//     } catch (error) {
+//         return res.status(500).json({ message: error.message });
+//     }
+// };
+
 export const getApertura = async (req, res) => {
     try {
         const { id_apertura } = req.params;
         const apertura = await Apertura.findOne({ where: { id_apertura } });
-        if (!apertura) return res.status(404).json({ message: "La apertura no existe" });
-        res.json(apertura);
+
+        if (!apertura) {
+            return res.status(404).json({ message: "La apertura no existe" });
+        }
+
+        const inicio = new Date(apertura.apertura_inicio);
+        const fin = new Date(apertura.apertura_fin);
+        
+        const inicioFormateado = inicio.toISOString().split('T')[0];
+        const finFormateado = fin.toISOString().split('T')[0];
+
+        const aperturaFormateada = {
+            id_apertura: apertura.id_apertura,
+            motivo: apertura.motivo,
+            apertura_inicio: inicioFormateado,
+            apertura_fin: finFormateado,
+            reserva_inicio: apertura.reserva_inicio,
+            reserva_fin: apertura.reserva_fin,
+            registro_apertura: apertura.registro_apertura,
+            gestion_id: apertura.gestion_id
+        };
+
+        res.json(aperturaFormateada);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
 
+
+
+
 export const createApertura = async (req, res) => {
-    const { apertura_inicio, apertura_fin, reserva_inicio, reserva_fin } = req.body;
+    const { motivo, gestion_id, apertura_inicio, apertura_fin, reserva_inicio, reserva_fin } = req.body;
     try {
-        const newApertura = await Apertura.create({ apertura_inicio, apertura_fin, reserva_inicio, reserva_fin });
+        const newApertura = await Apertura.create({ motivo, gestion_id, apertura_inicio, apertura_fin, reserva_inicio, reserva_fin });
         res.json(newApertura);
     } catch (error) {
         return res.status(500).json({ message: error.message });
