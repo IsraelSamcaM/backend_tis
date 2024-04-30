@@ -12,8 +12,8 @@ import { sequelize } from "./src/database/database.js";
 // import './models/Periodo.js'
 //import './src/models/Reserva.js'
 // import './models/Tipo_usuario.js'
-// import './models/Usuario.js'
-
+ //import './models/Usuario.js'
+//import './src/models/Usuario.js'
 
 
 async function main() {
