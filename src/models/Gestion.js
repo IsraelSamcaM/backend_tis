@@ -18,12 +18,3 @@ export const Gestion = sequelize.define('gestiones',{
     timestamps: false
 });
 
-Gestion.hasMany(Apertura,{
-    foreignKey: 'gestion_id',
-    sourceKey: 'id_gestion'
-})
-
-Apertura.belongsTo(Gestion,{
-    foreignKey: 'gestion_id',
-    targetId: 'id_gestion'
-})
