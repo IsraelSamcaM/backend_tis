@@ -18,11 +18,17 @@ export const Apertura = sequelize.define('aperturas',{
     apertura_fin:{
         type: DataTypes.DATE
     },
-    reserva_inicio:{
+    apertura_hora_inicio:{
         type: DataTypes.TIME
     },
-    reserva_fin:{
+    apertura_hora_fin:{
         type: DataTypes.TIME
+    },
+    reserva_inicio:{
+        type: DataTypes.DATE
+    },
+    reserva_fin:{
+        type: DataTypes.DATE
     },
     registro_apertura:{
         type: DataTypes.DATE,

@@ -33,19 +33,25 @@ export const getApertura = async (req, res) => {
 
         const inicio = new Date(apertura.apertura_inicio);
         const fin = new Date(apertura.apertura_fin);
+        const reservaInicio = new Date(apertura.reserva_inicio);
+        const reservaFin = new Date(apertura.reserva_fin);
         
         const inicioFormateado = inicio.toISOString().split('T')[0];
         const finFormateado = fin.toISOString().split('T')[0];
+        const reservaInicioFormateado = reservaInicio.toISOString().split('T')[0];
+        const reservaFinFormateado = reservaFin.toISOString().split('T')[0];
 
         const aperturaFormateada = {
             id_apertura: apertura.id_apertura,
             motivo: apertura.motivo,
             apertura_inicio: inicioFormateado,
             apertura_fin: finFormateado,
-            reserva_inicio: apertura.reserva_inicio,
-            reserva_fin: apertura.reserva_fin,
+            apertura_hora_inicio: apertura.apertura_hora_inicio,
+            apertura_hora_fin: apertura.apertura_hora_fin,
+            reserva_inicio: reservaInicioFormateado,
+            reserva_fin: reservaFinFormateado,
             registro_apertura: apertura.registro_apertura,
-            gestion_id: apertura.gestion_id
+         //   gestion_id: apertura.gestion_id
         };
 
         res.json(aperturaFormateada);
@@ -58,9 +64,9 @@ export const getApertura = async (req, res) => {
 
 
 export const createApertura = async (req, res) => {
-    const { motivo, gestion_id, apertura_inicio, apertura_fin, reserva_inicio, reserva_fin } = req.body;
+    const { motivo, gestion_id, apertura_inicio, apertura_fin, apertura_hora_inicio, apertura_hora_fin, reserva_inicio, reserva_fin } = req.body;
     try {
-        const newApertura = await Apertura.create({ motivo, gestion_id, apertura_inicio, apertura_fin, reserva_inicio, reserva_fin });
+        const newApertura = await Apertura.create({ motivo, gestion_id, apertura_inicio, apertura_fin, apertura_hora_inicio, apertura_hora_fin, reserva_inicio, reserva_fin });
         res.json(newApertura);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -70,11 +76,13 @@ export const createApertura = async (req, res) => {
 export const updateApertura = async (req, res) => {
     try {
         const { id_apertura } = req.params;
-        const { apertura_inicio, apertura_fin, reserva_inicio, reserva_fin } = req.body;
+        const { apertura_inicio, apertura_fin, apertura_hora_inicio, apertura_hora_fin, reserva_inicio, reserva_fin } = req.body;
 
         const apertura = await Apertura.findByPk(id_apertura);
         apertura.apertura_inicio = apertura_inicio;
         apertura.apertura_fin = apertura_fin;
+        apertura.apertura_hora_inicio = apertura_hora_inicio;
+        apertura.apertura_hora_fin = apertura_hora_fin;
         apertura.reserva_inicio = reserva_inicio;
         apertura.reserva_fin = reserva_fin;
 
