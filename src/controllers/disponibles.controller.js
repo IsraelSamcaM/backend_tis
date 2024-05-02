@@ -18,7 +18,7 @@ export const obtenerDisponibilidadPorAmbiente = async (req, res) => {
           where: { ambiente_id: id_ambiente },
           include: [{
               model: Periodo,
-              attributes: ['nombre_periodo', 'hora_inicio', 'hora_fin']
+              attributes: ['id_periodo', 'nombre_periodo', 'hora_inicio', 'hora_fin']
           }],
           order: [['dia', 'ASC']]
       });
@@ -27,6 +27,7 @@ export const obtenerDisponibilidadPorAmbiente = async (req, res) => {
       dias.forEach(dia => {
           const periodos = disponibles.filter(disponible => disponible.dia === dia)
               .map(disponible => ({
+                  id_periodo: disponible.periodo.id_periodo,
                   periodo: disponible.periodo.nombre_periodo,
                   hora_inicio: disponible.periodo.hora_inicio,
                   hora_fin: disponible.periodo.hora_fin
