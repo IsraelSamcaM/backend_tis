@@ -4,7 +4,7 @@ import { getTablaDisponibles, createReserva, getListaReservas,getListaReservasUs
 const router = Router();
 
 router.get('/lista_reservas', getListaReservas);
-router.get('/:id_usuario', getListaReservasUsuario);
+router.get('/reserva-usuario/:id_usuario', getListaReservasUsuario);
 
 router.post('/', getTablaDisponibles);
 router.post('/crear/', createReserva);
