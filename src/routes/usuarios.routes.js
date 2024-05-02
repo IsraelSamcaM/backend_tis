@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {createUsuario, getUsuario, getUsuarios, 
         updateUsuario, deleteUsuario, getUsuarioGrupo, 
-        getMateriasGrupos,getMateriasAsociados} from '../controllers/usuarios.controller.js';
+        getMateriasGrupos,getMateriasAsociados,validarUsuario} from '../controllers/usuarios.controller.js';
 
 const router = Router();
 
@@ -14,7 +14,7 @@ router.delete('/:id_usuario', deleteUsuario);
 router.get('/:id_usuario/materias-grupos', getMateriasGrupos);
 
 router.post('/materias-grupos-asociados', getMateriasAsociados);
-
+router.post('/validar-usuario',validarUsuario);
 
 
 

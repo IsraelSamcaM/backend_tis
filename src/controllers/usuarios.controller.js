@@ -224,5 +224,42 @@ export const getMateriasAsociados = async (req, res) => {
 };
 
 
+export const validarUsuario = async (req, res) => {
+    try {
+        const { codsiss, contrasenia_usuario } = req.body;
+
+        const usuario = await Usuario.findOne({
+            where: {
+                codsiss,
+                contrasenia_usuario,
+            },
+        });
+
+        if (!usuario) {
+            return res.json({ estado: 'failed' });
+        }
+
+        const usuarioFormateado = {
+            estado: 'successful',
+            usuarios: {
+                id_usuario: usuario.id_usuario,
+                nombre_usuario: usuario.nombre_usuario,
+                contrasenia_usuario: usuario.contrasenia_usuario,
+                email_usuario: usuario.email_usuario,
+                tipo_usuario: usuario.tipo_usuario,
+                codsiss: usuario.codsiss,
+                disponible: usuario.disponible,
+                ci_usuario: usuario.ci_usuario,
+                foto_usuario: usuario.foto_usuario,
+            },
+        };
+
+        res.json(usuarioFormateado);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
 
 
