@@ -2,15 +2,55 @@ import { Apertura } from '../models/Apertura.js';
 
 export const getAperturas = async (req, res) => {
     try {
-        const aperturas = await Apertura.findAll();
+        const aperturas = await Apertura.findAll({
+            order: [['id_apertura', 'DESC']],
+        });
+
         res.json(aperturas);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
 
+export const getAperturasTabla = async (req, res) => {
+    try {
+        const aperturas = await Apertura.findAll({
+            order: [['id_apertura', 'DESC']],
+        });
 
+        const aperturasFormateadas = aperturas.map(apertura => {
+            const inicio = apertura.apertura_inicio instanceof Date ? formatDateTime(apertura.apertura_inicio) : apertura.apertura_inicio;
+            const fin = apertura.apertura_fin instanceof Date ? formatDateTime(apertura.apertura_fin) : apertura.apertura_fin;
 
+            // Obtener el nombre del tipo de usuario basado en los campos docente y auxiliar
+            let tipoUsuarioNombre = '';
+            if (apertura.docente && apertura.auxiliar) {
+                tipoUsuarioNombre = 'DOCENTE - AUXILIAR';
+            } else if (apertura.docente) {
+                tipoUsuarioNombre = 'DOCENTE';
+            } else if (apertura.auxiliar) {
+                tipoUsuarioNombre = 'AUXILIAR';
+            }
+
+            return {
+                "inicio_apertura": `${apertura.apertura_hora_inicio} ${inicio}`,
+                "fin_apertura": `${apertura.apertura_hora_fin} ${fin}`,
+                "tipo_usuario": tipoUsuarioNombre,
+                "motivo": apertura.motivo
+            };
+        });
+
+        res.json(aperturasFormateadas);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+const formatDateTime = (date) => {
+    const formattedDate = new Date(date);
+    const formattedDateString = formattedDate.toISOString().split('T')[0];
+    return formattedDateString;
+};
 // export const getApertura = async (req, res) => {
 //     try {
 //         const { id_apertura } = req.params;
@@ -60,18 +100,39 @@ export const getApertura = async (req, res) => {
     }
 };
 
-
-
-
 export const createApertura = async (req, res) => {
-    const { motivo, gestion_id, apertura_inicio, apertura_fin, apertura_hora_inicio, apertura_hora_fin, reserva_inicio, reserva_fin } = req.body;
     try {
-        const newApertura = await Apertura.create({ motivo, gestion_id, apertura_inicio, apertura_fin, apertura_hora_inicio, apertura_hora_fin, reserva_inicio, reserva_fin });
-        res.json(newApertura);
+        const {
+            motivo,
+            apertura_inicio,
+            apertura_fin,
+            apertura_hora_inicio,
+            apertura_hora_fin,
+            reserva_inicio,
+            reserva_fin,
+            esDocente,
+            esAuxiliar 
+        } = req.body;
+   
+        const nuevaApertura = await Apertura.create({
+            motivo,
+            apertura_inicio,
+            apertura_fin,
+            apertura_hora_inicio,
+            apertura_hora_fin,
+            reserva_inicio,
+            reserva_fin,
+            docente : esDocente, 
+            auxiliar : esAuxiliar 
+        });
+
+      
+        res.status(201).json(nuevaApertura);
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 };
+
 
 export const updateApertura = async (req, res) => {
     try {
