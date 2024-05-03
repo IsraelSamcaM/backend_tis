@@ -150,9 +150,9 @@ export const getMateriasGrupos = async (req, res) => {
             'materia-grupo': gruposConMateria
         });
 
-        const materiasComunes =  getMateriasComunes(respuestaFinal)
+        //const materiasComunes =  getMateriasComunes(respuestaFinal)
 
-        res.json(materiasComunes)
+        res.json(respuestaFinal)
 
 
     } catch (error) {
