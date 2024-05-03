@@ -2,7 +2,7 @@ import app from "./src/app.js";
 import { sequelize } from "./src/database/database.js";
 
 // import './models/Ambiente.js'
-// import './models/Apertura.js'
+// import './src/models/Apertura.js'
 // import './models/Aux_grupos.js'
 // import './models/Auxiliar_reserva.js'
 // import './models/Disponible.js'
@@ -17,7 +17,7 @@ import { sequelize } from "./src/database/database.js";
 
 
 async function main() {
-    //await sequelize.sync({alter: true});
+   // await sequelize.sync({alter: true});
     const PORT = process.env.PORT || 4000;
 
     app.listen(PORT, () => {
