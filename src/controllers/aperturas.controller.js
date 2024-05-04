@@ -19,11 +19,11 @@ export const getAperturasTabla = async (req, res) => {
             order: [['id_apertura', 'DESC']],
         });
 
-        const aperturasFormateadas = aperturas.map(apertura => {
+            const aperturasFormateadas = aperturas.map(apertura => {
             const inicio = apertura.apertura_inicio instanceof Date ? formatDateTime(apertura.apertura_inicio) : apertura.apertura_inicio;
             const fin = apertura.apertura_fin instanceof Date ? formatDateTime(apertura.apertura_fin) : apertura.apertura_fin;
 
-            // Obtener el nombre del tipo de usuario basado en los campos docente y auxiliar
+            // Obtener el nombre del tipo de usuario    
             let tipoUsuarioNombre = '';
             if (apertura.docente && apertura.auxiliar) {
                 tipoUsuarioNombre = 'DOCENTE - AUXILIAR';
@@ -33,9 +33,12 @@ export const getAperturasTabla = async (req, res) => {
                 tipoUsuarioNombre = 'AUXILIAR';
             }
 
+            const inicioHoraMinutos = apertura.apertura_hora_inicio.slice(0, 5);
+            const finHoraMinutos = apertura.apertura_hora_fin.slice(0, 5); 
+        
             return {
-                "inicio_apertura": `${apertura.apertura_hora_inicio} ${inicio}`,
-                "fin_apertura": `${apertura.apertura_hora_fin} ${fin}`,
+                "inicio_apertura": `${inicioHoraMinutos} ${inicio}`,
+                "fin_apertura": `${finHoraMinutos} ${fin}`,
                 "tipo_usuario": tipoUsuarioNombre,
                 "motivo": apertura.motivo
             };
@@ -92,7 +95,6 @@ export const getApertura = async (req, res) => {
             reserva_inicio: reservaInicioFormateado,
             reserva_fin: reservaFinFormateado,
             registro_apertura: apertura.registro_apertura,
-         //   gestion_id: apertura.gestion_id
         };
 
         res.json(aperturaFormateada);
