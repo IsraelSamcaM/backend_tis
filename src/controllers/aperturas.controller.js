@@ -1,4 +1,5 @@
 import { Apertura } from '../models/Apertura.js';
+import { Op } from 'sequelize';
 
 export const getAperturas = async (req, res) => {
     try {
@@ -113,11 +114,14 @@ export const createApertura = async (req, res) => {
             esDocente,
             esAuxiliar 
         } = req.body;
+
+        const fechaInicio = new Date(`${apertura_inicio}T${apertura_hora_inicio}`);
+        const fechaFin = new Date(`${apertura_fin}T${apertura_hora_fin}`);
    
         const nuevaApertura = await Apertura.create({
             motivo,
-            apertura_inicio,
-            apertura_fin,
+            apertura_inicio: fechaInicio,
+            apertura_fin: fechaFin,
             apertura_hora_inicio,
             apertura_hora_fin,
             reserva_inicio,
@@ -160,6 +164,29 @@ export const deleteApertura = async (req, res) => {
         const { id_apertura } = req.params;
         await Apertura.destroy({ where: { id_apertura } });
         res.sendStatus(204);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+export const aperturaPorFecha = async (req, res) => {
+    try {
+        const fechaActual = new Date(); 
+
+        const aperturas = await Apertura.findAll({
+            where: {
+                apertura_inicio: {
+                    [Op.lte]: fechaActual 
+                },
+                
+                apertura_fin: {
+                    [Op.gte]: fechaActual 
+                }
+            }
+        });
+
+        res.json(aperturas); 
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
