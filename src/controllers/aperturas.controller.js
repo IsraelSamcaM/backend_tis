@@ -22,8 +22,7 @@ export const getAperturasTabla = async (req, res) => {
             const aperturasFormateadas = aperturas.map(apertura => {
             const inicio = apertura.apertura_inicio instanceof Date ? formatDateTime(apertura.apertura_inicio) : apertura.apertura_inicio;
             const fin = apertura.apertura_fin instanceof Date ? formatDateTime(apertura.apertura_fin) : apertura.apertura_fin;
-
-            // Obtener el nombre del tipo de usuario    
+  
             let tipoUsuarioNombre = '';
             if (apertura.docente && apertura.auxiliar) {
                 tipoUsuarioNombre = 'DOCENTE - AUXILIAR';
@@ -35,12 +34,24 @@ export const getAperturasTabla = async (req, res) => {
 
             const inicioHoraMinutos = apertura.apertura_hora_inicio.slice(0, 5);
             const finHoraMinutos = apertura.apertura_hora_fin.slice(0, 5); 
-        
+            const periodo = `${formatDateTime(apertura.reserva_inicio)} ${formatDateTime(apertura.reserva_fin)}`;
+            const now = new Date();
+
+             // Estado
+             let estado = '';
+             if (now > apertura.apertura_fin) {
+              estado = 'FINALIZADO';
+             } else if (now >= apertura.apertura_inicio && now <= apertura.apertura_fin) {
+              estado = 'VIGENTE';
+             }
+
             return {
                 "inicio_apertura": `${inicioHoraMinutos} ${inicio}`,
                 "fin_apertura": `${finHoraMinutos} ${fin}`,
-                "tipo_usuario": tipoUsuarioNombre,
-                "motivo": apertura.motivo
+                "periodo_reservas": periodo,
+                "tipo_usuario": tipoUsuarioNombre,       
+                "motivo": apertura.motivo,
+                "estado": estado
             };
         });
 
