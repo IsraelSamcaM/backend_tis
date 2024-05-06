@@ -15,7 +15,7 @@ export const obtenerDisponibilidadPorAmbiente = async (req, res) => {
 
       const disponibilidadPorDia = [];
       const disponibles = await Disponible.findAll({
-          where: { ambiente_id: id_ambiente },
+          where: { ambiente_id: id_ambiente, habilitado: true },
           include: [{
               model: Periodo,
               attributes: ['id_periodo', 'nombre_periodo', 'hora_inicio', 'hora_fin']

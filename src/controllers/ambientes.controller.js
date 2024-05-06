@@ -1,5 +1,6 @@
 import {Ambiente} from '../models/Ambiente.js'
 import {Disponible} from '../models/Disponible.js'
+import {Periodo} from '../models/Periodo.js'
 
 export const getAmbientes = async (req, res) =>{
     try {
@@ -61,8 +62,8 @@ export const createAmbienteCompleto = async (req, res) => {
                 await Disponible.create({
                     ambiente_id: ambiente.id_ambiente,
                     dia: diaNombre, 
-                    periodo_id: periodo.id_periodo
-                    
+                    periodo_id: periodo.id_periodo,
+                    habilitado: true
                 });
             }
         }
@@ -129,4 +130,67 @@ export const deleteAmbiente = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const editarAmbienteCompleto = async (req, res) => {
+    try {
+        //const {  } = req.params.id_ambiente;
+        const {id_ambiente , nombre_ambiente, tipo, capacidad, disponible, computadora, proyector, ubicacion, dia, porcentaje_min, porcentaje_max } = req.body;
+        console.log(id_ambiente)
+        
+        await Ambiente.update({
+            nombre_ambiente,
+            tipo,
+            capacidad,
+            disponible,
+            computadora,
+            proyector,
+            ubicacion,
+            porcentaje_min,
+            porcentaje_max
+        }, {
+            where: {
+                id_ambiente: id_ambiente
+            }
+        });
+
+        await Disponible.update(
+            { habilitado: false },
+            {
+                where: {
+                    ambiente_id: id_ambiente
+                }
+            }
+        );
+        
+        for (const diaNombre in dia) { 
+            const periodos = dia[diaNombre].periodos; 
+            for (const periodo of periodos) {
+                const [updatedCount] = await Disponible.update(
+                    { habilitado: true },
+                    {
+                        where: {
+                            ambiente_id: id_ambiente,
+                            dia: diaNombre,
+                            periodo_id: periodo.id_periodo
+                        }
+                    }
+                );
+                if (updatedCount === 0) {
+                    await Disponible.create({
+                        ambiente_id: id_ambiente,
+                        dia: diaNombre,
+                        periodo_id: periodo.id_periodo,
+                        habilitado: true
+                    });
+                }
+            }
+        }
+
+        return res.status(200).json({ message: 'Ambiente editado exitosamente' });
+    } catch (error) {
+        console.error('Error al editar ambiente completo:', error);
+        return res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
 
