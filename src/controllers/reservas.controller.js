@@ -7,6 +7,7 @@ import { Auxiliar_reserva } from '../models/Auxiliar_reserva.js';
 import { sequelize } from "../database/database.js"
 import { Model } from 'sequelize';
 
+
 // {
 //     "id_disponible": 226,
 //     "fecha_reserva":"2024-04-17",
@@ -141,6 +142,7 @@ const obtenerDisponibles = async (arrayIdsAmbientes, diaFecha, arrayIdsPeriodos)
             ambiente_id: arrayIdsAmbientes,
             dia: diaFecha,
             periodo_id: arrayIdsPeriodos,
+            habilitado: true
         }
     });
     const disp = disponibles.map(disponible => disponible.id_disponible)
