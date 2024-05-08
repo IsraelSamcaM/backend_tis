@@ -1,4 +1,5 @@
 import { Materia } from '../models/Materia.js';
+import { Aux_grupo } from '../models/Aux_grupos.js';
 
 import { Grupo } from '../models/Grupo.js';
 import { Usuario } from '../models/Usuario.js';
@@ -141,4 +142,36 @@ export const uploadExcel = async (req, res) => {
         return res.status(500).json({ message: 'Error al leer archivo Excel', error: error.message });
     }
 };
+
+export const materiaUsuario = async (req, res) => {
+  try {
+    const { id_materia } = req.params;
+
+    const result = await Materia.findOne({
+      where: { id_materia: id_materia },
+      include: [
+        {
+          model: Grupo,
+          attributes: ['id_grupo', 'nombre_grupo', 'cantidad_est'], 
+          include: [
+            {
+              model: Aux_grupo,
+              attributes: ['id_aux_grupo'], 
+              include: [
+                {
+                  model: Usuario,
+                  attributes: ['id_usuario', 'nombre_usuario', 'tipo_usuario'], 
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
 
