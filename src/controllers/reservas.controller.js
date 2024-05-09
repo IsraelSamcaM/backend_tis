@@ -107,7 +107,8 @@ const mapearAmbientes = (ambientes, cantidadEst, tipoAmbiente) => {
             if (
                 tipo === tipoAmbiente &&
                 capacidad_min <= cantidadEst &&
-                cantidadEst <= capacidad_max
+                cantidadEst <= capacidad_max &&
+                disponible === true 
             ) {
                 return id_ambiente;
             } else {
