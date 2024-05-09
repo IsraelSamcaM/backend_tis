@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {createAmbiente,getAmbiente,deleteAmbiente,updateAmbiente, getAmbientes,createAmbienteCompleto,editarAmbienteCompleto} from '../controllers/ambientes.controller.js'
+import {createAmbiente,getAmbiente,deleteAmbiente,updateAmbiente, getAmbientes,createAmbienteCompleto,editarAmbienteCompleto, registrarBaja} from '../controllers/ambientes.controller.js'
 
 const router = Router();
 
@@ -13,6 +13,7 @@ router.post('/completo',createAmbienteCompleto)
 
 router.put('/:id_ambiente',updateAmbiente)
 router.post('/editar-completo',editarAmbienteCompleto)
+router.post('/editar-disponibilidad',registrarBaja)
 router.delete('/:id_ambiente',deleteAmbiente)
 router.get('/:id_ambiente',getAmbiente)
 
