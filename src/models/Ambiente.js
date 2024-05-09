@@ -1,6 +1,7 @@
 import {DataTypes} from 'sequelize'
 import { sequelize } from '../database/database.js'
 import { Disponible } from './Disponible.js'
+import { Baja } from './Baja.js';
  
 export const Ambiente = sequelize.define('ambientes',{
     id_ambiente:{
@@ -59,6 +60,16 @@ Ambiente.hasMany(Disponible,{
 })
 
 Disponible.belongsTo(Ambiente,{
+    foreignKey: 'ambiente_id',
+    targetId: 'id_ambiente'
+})
+
+Ambiente.hasMany(Baja,{
+    foreignKey: 'ambiente_id',
+    sourceKey: 'id_ambiente'
+})
+
+Baja.belongsTo(Ambiente,{
     foreignKey: 'ambiente_id',
     targetId: 'id_ambiente'
 })
