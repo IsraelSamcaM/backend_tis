@@ -1,6 +1,10 @@
 import {Ambiente} from '../models/Ambiente.js'
 import {Disponible} from '../models/Disponible.js'
 import {Periodo} from '../models/Periodo.js'
+import {Baja} from '../models/Baja.js'
+import { Usuario } from '../models/Usuario.js';
+import { Reserva } from '../models/Reserva.js';
+
 
 export const getAmbientes = async (req, res) =>{
     try {
@@ -187,6 +191,44 @@ export const editarAmbienteCompleto = async (req, res) => {
         }
 
         return res.status(200).json({ message: 'Ambiente editado exitosamente' });
+    } catch (error) {
+        console.error('Error al editar ambiente completo:', error);
+        return res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
+export const registrarBaja = async (req, res) => {
+    try {
+        const { id_ambiente, motivo } = req.body;
+
+        const createBaja = await Baja.create({
+            ambiente_id: id_ambiente,
+            motivo,
+        });
+
+        const ambiente = await Ambiente.findByPk(id_ambiente);
+        ambiente.disponible = false;
+        await ambiente.save();
+
+        const disponibles = await Disponible.findAll({
+            attributes: ['id_disponible'],
+            where: {
+                ambiente_id: id_ambiente,
+            },
+        });
+        const dispIds = disponibles.map(disponible => disponible.id_disponible);
+
+        await Reserva.update(
+            { estado: 'cancelado' },
+            {
+                where: {
+                    disponible_id: dispIds,
+                    estado: 'vigente',
+                },
+            }
+        );
+
+        return res.json(createBaja);
     } catch (error) {
         console.error('Error al editar ambiente completo:', error);
         return res.status(500).json({ message: 'Error interno del servidor' });

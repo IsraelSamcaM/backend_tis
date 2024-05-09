@@ -1,7 +1,7 @@
 import app from "./src/app.js";
 import { sequelize } from "./src/database/database.js";
 
-// import './models/Ambiente.js'
+ //import './src/models/Ambiente.js'
 // import './src/models/Apertura.js'
 // import './models/Aux_grupos.js'
 // import './models/Auxiliar_reserva.js'
@@ -11,6 +11,7 @@ import { sequelize } from "./src/database/database.js";
 // import './models/Materia.js'
 // import './models/Periodo.js'
 //import './src/models/Reserva.js'
+//import './src/models/Baja.js'
 // import './models/Tipo_usuario.js'
  //import './models/Usuario.js'
 //import './src/models/Usuario.js'

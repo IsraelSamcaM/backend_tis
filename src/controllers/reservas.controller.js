@@ -26,8 +26,10 @@ export const createReserva = async (req, res) => {
             fecha_reserva: fecha_reserva + "T12:00:00.000Z",
             motivo: motivo,
             apertura_id: id_apertura,
-            cantidad_total: cantidad_total
+            cantidad_total: cantidad_total,
+            estado : 'vigente'
         });
+
 
 
         for (const grupoId of listaGrupos) {
