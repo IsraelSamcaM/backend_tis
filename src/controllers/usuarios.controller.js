@@ -170,7 +170,6 @@ export const getMateriasAsociados = async (req, res) => {
     const { id_solicitantes } = req.body;
 
     try {
-        
         const usuarios = await Usuario.findAll({
             where: { id_usuario: id_solicitantes },
             attributes: ['id_usuario', 'nombre_usuario', 'contrasenia_usuario', 'email_usuario', 'tipo_usuario', 'codsiss', 'disponible'],
@@ -188,13 +187,11 @@ export const getMateriasAsociados = async (req, res) => {
             }]
         });
 
-        
         if (!usuarios || usuarios.length === 0) {
             return res.status(404).json({ message: 'Usuarios no encontrados' });
         }
 
-        const materiasCount = {};
-            
+        let materiasCount = {};
         usuarios.forEach(usuario => {
             usuario.aux_grupos.forEach(auxGrupo => {
                 const materia = auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null;
@@ -204,26 +201,29 @@ export const getMateriasAsociados = async (req, res) => {
 
         const materiasComunes = Object.keys(materiasCount).filter(materia => materiasCount[materia] === usuarios.length);
 
-        const respuesta = usuarios.flatMap(usuario =>
-            usuario.aux_grupos.filter(auxGrupo => {
-                const materia = auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null;
-                return materiasComunes.includes(materia);
-            }).map(auxGrupo => ({
-                id_aux_grupo: auxGrupo.id_aux_grupo,
-                id_grupo: auxGrupo.grupo.id_grupo,
-                nombre_grupo: auxGrupo.grupo.nombre_grupo,
-                id_materia: auxGrupo.grupo.materia.id_materia,
-                nombre_materia: auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null,
-                cantidad_est: auxGrupo.grupo.cantidad_est
-               
-            }))
-        );
+        let respuesta = [];
+        if (materiasComunes.length > 0) {
+            respuesta = usuarios.flatMap(usuario =>
+                usuario.aux_grupos.filter(auxGrupo => {
+                    const materia = auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null;
+                    return materiasComunes.includes(materia);
+                }).map(auxGrupo => ({
+                    id_aux_grupo: auxGrupo.id_aux_grupo,
+                    id_grupo: auxGrupo.grupo.id_grupo,
+                    nombre_grupo: auxGrupo.grupo.nombre_grupo,
+                    id_materia: auxGrupo.grupo.materia.id_materia,
+                    nombre_materia: auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null,
+                    cantidad_est: auxGrupo.grupo.cantidad_est
+                }))
+            );
+        }
 
         res.json(respuesta);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
 
 export const validarUsuario = async (req, res) => {
