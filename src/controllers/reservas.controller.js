@@ -18,19 +18,27 @@ import { Model } from 'sequelize';
 //   }
 
 export const createReserva = async (req, res) => {
-
-    const { id_disponible, fecha_reserva, motivo, listaGrupos, id_apertura,cantidad_total } = req.body;
+    const { id_disponible, fecha_reserva, motivo, listaGrupos, id_apertura, cantidad_total } = req.body;
     try {
+        const existingReserva = await Reserva.findOne({ 
+            where: { 
+                disponible_id: id_disponible, 
+                fecha_reserva: fecha_reserva + "T12:00:00.000Z" 
+            } 
+        });
+
+        if (existingReserva) {
+            return res.status(400).json({ message: 'Ya existe una reserva para este ambiente.' });
+        }
+
         const newReserva = await Reserva.create({
             disponible_id: id_disponible,
             fecha_reserva: fecha_reserva + "T12:00:00.000Z",
             motivo: motivo,
             apertura_id: id_apertura,
             cantidad_total: cantidad_total,
-            estado : 'vigente'
+            estado: 'vigente'
         });
-
-
 
         for (const grupoId of listaGrupos) {
             await Auxiliar_reserva.create({
