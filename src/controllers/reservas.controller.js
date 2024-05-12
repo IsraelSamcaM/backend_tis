@@ -7,6 +7,8 @@ import { Auxiliar_reserva } from '../models/Auxiliar_reserva.js';
 import { sequelize } from "../database/database.js"
 import { Model } from 'sequelize';
 
+import moment from 'moment';
+
 
 // {
 //     "id_disponible": 226,
@@ -232,8 +234,8 @@ export const getListaReservas = async (req, res) => {
         const result = await sequelize.query(`
             SELECT R.id_reserva, LPAD(R.id_reserva::text, 3, '0') as id_reserva_lista, u.nombre_usuario, u.tipo_usuario, 
                    r.fecha_reserva, r.registro_reserva, r.estado, p.hora_inicio, p.hora_fin, 
-                   string_agg(g.nombre_grupo, ', ') AS nombre_grupo, 
-                   string_agg(m.nombre_materia || ' - ' || g.nombre_grupo, ', ') AS nombre_materia,
+                   string_agg(g.nombre_grupo, ', ' ORDER BY g.nombre_grupo) AS nombre_grupo, 
+                   string_agg(m.nombre_materia || ' - ' || g.nombre_grupo, ', ' ORDER BY m.nombre_materia) AS nombre_materia,
                    A.nombre_ambiente,
                    R.cantidad_total AS cantidad_est,
                    SUM(g.cantidad_est) AS cantidad_sumada,
@@ -265,6 +267,13 @@ export const getListaReservas = async (req, res) => {
                 existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
                 existingItem.cantidad_sumada += current.cantidad_sumada;
             } else {
+                current.registro_reserva = moment(current.registro_reserva).format('YYYY-MM-DD HH:mm:ss');
+                current.fecha_reserva = moment(current.fecha_reserva).format('YYYY-MM-DD');
+
+                if (moment(current.fecha_reserva).isBefore(moment(), 'day')) {
+                    current.estado = 'finalizado';
+                }
+
                 current.min_cap_max = `${current.min_capacidad} - ${current.capacidad} - ${current.max_capacidad}`;
                 acc.push(current);
             }
@@ -276,6 +285,7 @@ export const getListaReservas = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
 
 
@@ -314,23 +324,23 @@ export const getListaReservasUsuario = async (req, res) => {
             type: sequelize.QueryTypes.SELECT
         });
 
-        const combinedResult = result.reduce((acc, current) => {
-            const existingItem = acc.find(item => item.id_reserva === current.id_reserva);
+        const combinedResult = result.map(item => {
+            item.registro_reserva = moment(item.registro_reserva).format('YYYY-MM-DD HH:mm:ss');
+            item.fecha_reserva = moment(item.fecha_reserva).format('YYYY-MM-DD');
 
-            if (existingItem) {
-                existingItem.nombre_materia += `, ${current.nombre_materia}`;
-                existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
-                existingItem.cantidad_sumada += current.cantidad_sumada;
-            } else {
-                current.min_cap_max = `${current.min_capacidad} - ${current.capacidad} - ${current.max_capacidad}`;
-                acc.push(current);
+            if (moment(item.fecha_reserva).isBefore(moment(), 'day')) {
+                item.estado = 'finalizado';
             }
 
-            return acc;
-        }, []);
+            item.min_cap_max = `${item.min_capacidad} - ${item.capacidad} - ${item.max_capacidad}`;
+
+            return item;
+        });
 
         res.json(combinedResult);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
