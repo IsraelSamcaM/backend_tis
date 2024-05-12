@@ -34,6 +34,10 @@ export const Ambiente = sequelize.define('ambientes',{
         type: DataTypes.STRING
 
     },
+
+    actualizacion:{
+        type: DataTypes.DATE
+    },
     
     // foto:{
     //     type: DataTypes.STRING
