@@ -10,7 +10,7 @@ export const getAmbientes = async (req, res) =>{
     try {
         const ambientes = await Ambiente.findAll({
             raw: true,
-            order: [['id_ambiente', 'DESC']]
+            order: [['actualizacion', 'DESC'], ['id_ambiente', 'DESC']]
         });
         
         const ambientesFormateados = ambientes.map(ambiente => {
@@ -57,7 +57,8 @@ export const createAmbienteCompleto = async (req, res) => {
             proyector,
             ubicacion,
             porcentaje_min,
-            porcentaje_max
+            porcentaje_max,
+            actualizacion: new Date()
         });
 
         for (const diaNombre in dia) { 
@@ -150,7 +151,8 @@ export const editarAmbienteCompleto = async (req, res) => {
             proyector,
             ubicacion,
             porcentaje_min,
-            porcentaje_max
+            porcentaje_max,
+            actualizacion: new Date()
         }, {
             where: {
                 id_ambiente: id_ambiente
