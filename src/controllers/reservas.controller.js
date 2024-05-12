@@ -231,7 +231,7 @@ export const getListaReservas = async (req, res) => {
     try {
         const result = await sequelize.query(`
             SELECT R.id_reserva, LPAD(R.id_reserva::text, 3, '0') as id_reserva_lista, u.nombre_usuario, u.tipo_usuario, 
-                   r.fecha_reserva, p.hora_inicio, p.hora_fin, 
+                   r.fecha_reserva, r.registro_reserva, r.estado, p.hora_inicio, p.hora_fin, 
                    string_agg(g.nombre_grupo, ', ') AS nombre_grupo, 
                    string_agg(m.nombre_materia || ' - ' || g.nombre_grupo, ', ') AS nombre_materia,
                    A.nombre_ambiente,
@@ -252,7 +252,7 @@ export const getListaReservas = async (req, res) => {
             JOIN materias m ON g.materia_id = m.id_materia
             JOIN usuarios u ON ag.usuario_id = u.id_usuario
             GROUP BY R.id_reserva, u.nombre_usuario, u.tipo_usuario, 
-                r.fecha_reserva, p.hora_inicio, p.hora_fin, A.nombre_ambiente, A.capacidad, A.porcentaje_min, A.porcentaje_max
+                r.fecha_reserva, r.registro_reserva, r.estado, p.hora_inicio, p.hora_fin, A.nombre_ambiente, A.capacidad, A.porcentaje_min, A.porcentaje_max
             ORDER BY R.id_reserva DESC;
         `, {
             type: sequelize.QueryTypes.SELECT
@@ -285,7 +285,7 @@ export const getListaReservasUsuario = async (req, res) => {
 
         const result = await sequelize.query(`
             SELECT R.id_reserva, LPAD(R.id_reserva::text, 3, '0') as id_reserva_lista, u.nombre_usuario, u.tipo_usuario,
-                   r.fecha_reserva, p.hora_inicio, p.hora_fin,
+                   r.fecha_reserva, r.registro_reserva, r.estado, p.hora_inicio, p.hora_fin,
                    string_agg(g.nombre_grupo, ', ') AS nombre_grupo,
                    string_agg(m.nombre_materia || ' - ' || g.nombre_grupo, ', ') AS nombre_materia,
                    A.nombre_ambiente,
@@ -307,7 +307,7 @@ export const getListaReservasUsuario = async (req, res) => {
             JOIN usuarios u ON ag.usuario_id = u.id_usuario
             WHERE u.id_usuario = :id_usuario
             GROUP BY R.id_reserva, u.nombre_usuario, u.tipo_usuario,
-                r.fecha_reserva, p.hora_inicio, p.hora_fin, A.nombre_ambiente, A.capacidad, A.porcentaje_min, A.porcentaje_max
+                r.fecha_reserva, r.registro_reserva, r.estado, p.hora_inicio, p.hora_fin, A.nombre_ambiente, A.capacidad, A.porcentaje_min, A.porcentaje_max
             ORDER BY R.id_reserva DESC;
         `, {
             replacements: { id_usuario },
