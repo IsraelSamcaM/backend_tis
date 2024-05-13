@@ -41,7 +41,7 @@ export const getAperturasTabla = async (req, res) => {
              let estado = '';
              if (now > apertura.apertura_fin) {
               estado = 'FINALIZADO';
-             } else if (now >= apertura.apertura_inicio && now <= apertura.apertura_fin) {
+             } else if ( now <= apertura.apertura_fin) {
               estado = 'VIGENTE';
              }
 
