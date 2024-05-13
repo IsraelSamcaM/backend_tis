@@ -147,7 +147,7 @@ export const getMateriasGrupos = async (req, res) => {
             tipo_usuario: usuario.tipo_usuario,
             codsiss: usuario.codsiss,
             disponible: usuario.disponible,
-            'materia-grupo': gruposConMateria
+            'materia_grupo': gruposConMateria
         });
 
         //const materiasComunes =  getMateriasComunes(respuestaFinal)
