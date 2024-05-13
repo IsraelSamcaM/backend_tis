@@ -2,6 +2,7 @@ import { Usuario } from '../models/Usuario.js';
 import { Grupo } from '../models/Grupo.js'; // Asegúrate de importar el modelo de Grupo si lo necesitas
 import { Materia } from '../models/Materia.js';
 import { Aux_grupo } from '../models/Aux_grupos.js';
+import {v4 as uuidv4 } from 'uuid'
 
 export const getUsuarios = async (req, res) => {
     try {
@@ -240,13 +241,14 @@ export const validarUsuario = async (req, res) => {
         if (!usuario) {
             return res.json({ estado: 'failed' });
         }
+        const id_uuid = uuidv4();
 
         const usuarioFormateado = {
             estado: 'successful',
-            usuarios: {
+            usuario: {
                 id_usuario: usuario.id_usuario,
+                id_uuid,
                 nombre_usuario: usuario.nombre_usuario,
-                contrasenia_usuario: usuario.contrasenia_usuario,
                 email_usuario: usuario.email_usuario,
                 tipo_usuario: usuario.tipo_usuario,
                 codsiss: usuario.codsiss,
