@@ -241,13 +241,13 @@ export const validarUsuario = async (req, res) => {
         if (!usuario) {
             return res.json({ estado: 'failed' });
         }
-        const id_uuid = uuidv4();
+        const token = uuidv4();
 
         const usuarioFormateado = {
             estado: 'successful',
             usuario: {
                 id_usuario: usuario.id_usuario,
-                id_uuid,
+                token,
                 nombre_usuario: usuario.nombre_usuario,
                 email_usuario: usuario.email_usuario,
                 tipo_usuario: usuario.tipo_usuario,
