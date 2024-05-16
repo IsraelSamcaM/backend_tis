@@ -28,9 +28,9 @@ export const Reserva = sequelize.define('reservas',{
     estado:{
         type: DataTypes.STRING,
     },
-    registro_reserva:{
+    registro_reserva: {
         type: DataTypes.DATE,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
     }
 },{
     timestamps: false

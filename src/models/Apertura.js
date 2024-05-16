@@ -37,7 +37,7 @@ export const Apertura = sequelize.define('aperturas',{
     },
     registro_apertura:{
         type: DataTypes.DATE,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
     }
 },{
     timestamps: false,

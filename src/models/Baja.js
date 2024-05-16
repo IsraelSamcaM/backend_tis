@@ -12,7 +12,7 @@ export const Baja = sequelize.define('Bajas',{
     },
     registro_baja:{
         type: DataTypes.DATE,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
     },
     estado_baja:{
         type: DataTypes.BOOLEAN,

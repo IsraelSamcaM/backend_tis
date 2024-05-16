@@ -172,14 +172,13 @@ export const getMateriasAsociados = async (req, res) => {
     try {
         const usuarios = await Usuario.findAll({
             where: { id_usuario: id_solicitantes },
-            attributes: ['id_usuario', 'nombre_usuario', 'contrasenia_usuario', 'email_usuario', 'tipo_usuario', 'codsiss', 'disponible'],
             include: [{
                 model: Aux_grupo,
                 include: [{
                     model: Grupo,
                     include: [{
                         model: Materia,
-                        attributes: ['nombre_materia','id_materia']
+                        attributes: ['nombre_materia', 'id_materia']
                     }],
                     attributes: ['id_grupo', 'nombre_grupo', 'cantidad_est'],
                 }],
@@ -191,23 +190,11 @@ export const getMateriasAsociados = async (req, res) => {
             return res.status(404).json({ message: 'Usuarios no encontrados' });
         }
 
-        let materiasCount = {};
-        usuarios.forEach(usuario => {
-            usuario.aux_grupos.forEach(auxGrupo => {
-                const materia = auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null;
-                materiasCount[materia] = (materiasCount[materia] || 0) + 1;
-            });
-        });
-
-        const materiasComunes = Object.keys(materiasCount).filter(materia => materiasCount[materia] === usuarios.length);
-
         let respuesta = [];
-        if (materiasComunes.length > 0) {
+
+        if (id_solicitantes.length === 1) {
             respuesta = usuarios.flatMap(usuario =>
-                usuario.aux_grupos.filter(auxGrupo => {
-                    const materia = auxGrupo.grupo.materia ? auxGrupo.grupo.materia.nombre_materia : null;
-                    return materiasComunes.includes(materia);
-                }).map(auxGrupo => ({
+                usuario.aux_grupos.map(auxGrupo => ({
                     id_aux_grupo: auxGrupo.id_aux_grupo,
                     id_grupo: auxGrupo.grupo.id_grupo,
                     nombre_grupo: auxGrupo.grupo.nombre_grupo,
@@ -216,6 +203,26 @@ export const getMateriasAsociados = async (req, res) => {
                     cantidad_est: auxGrupo.grupo.cantidad_est
                 }))
             );
+        } else {
+            const materiasUsuario1 = usuarios[0].aux_grupos.map(auxGrupo => auxGrupo.grupo.materia.nombre_materia);
+            const materiasUsuario2 = usuarios[1].aux_grupos.map(auxGrupo => auxGrupo.grupo.materia.nombre_materia);
+
+            const materiasComunes = materiasUsuario1.filter(materia => materiasUsuario2.includes(materia));
+
+            if (materiasComunes.length > 0) {
+                respuesta = usuarios.flatMap(usuario =>
+                    usuario.aux_grupos.filter(auxGrupo =>
+                        materiasComunes.includes(auxGrupo.grupo.materia.nombre_materia)
+                    ).map(auxGrupo => ({
+                        id_aux_grupo: auxGrupo.id_aux_grupo,
+                        id_grupo: auxGrupo.grupo.id_grupo,
+                        nombre_grupo: auxGrupo.grupo.nombre_grupo,
+                        id_materia: auxGrupo.grupo.materia.id_materia,
+                        nombre_materia: auxGrupo.grupo.materia.nombre_materia,
+                        cantidad_est: auxGrupo.grupo.cantidad_est
+                    }))
+                );
+            }
         }
 
         res.json(respuesta);
@@ -223,6 +230,8 @@ export const getMateriasAsociados = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
 
 
 
