@@ -152,7 +152,7 @@ export const editarAmbienteCompleto = async (req, res) => {
             ubicacion,
             porcentaje_min,
             porcentaje_max,
-            actualizacion: new Date()
+            actualizacion: sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
         }, {
             where: {
                 id_ambiente: id_ambiente
@@ -210,6 +210,7 @@ export const registrarBaja = async (req, res) => {
 
         const ambiente = await Ambiente.findByPk(id_ambiente);
         ambiente.disponible = false;
+        ambiente.actualizacion = sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
         await ambiente.save();
 
         const disponibles = await Disponible.findAll({
