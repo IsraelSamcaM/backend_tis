@@ -9,6 +9,9 @@ import { Model } from 'sequelize';
 
 import moment from 'moment';
 
+const fechaFormateada = (dateString) => {
+    return moment(dateString).format('DD-MM-YYYY');
+};
 
 // {
 //     "id_disponible": 226,
@@ -267,10 +270,10 @@ export const getListaReservas = async (req, res) => {
                 existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
                 existingItem.cantidad_sumada += current.cantidad_sumada;
             } else {
-                current.registro_reserva = moment(current.registro_reserva).format('YYYY-MM-DD HH:mm:ss');
-                current.fecha_reserva = moment(current.fecha_reserva).format('YYYY-MM-DD');
+                current.registro_reserva = fechaFormateada(current.registro_reserva);  // Usa la función definida aquí
+                current.fecha_reserva = fechaFormateada(current.fecha_reserva);  // Usa la función definida aquí
 
-                if (moment(current.fecha_reserva).isBefore(moment(), 'day')) {
+                if (moment(current.fecha_reserva, 'DD-MM-YYYY').isBefore(moment(), 'day')) {
                     current.estado = 'finalizado';
                 }
 
@@ -325,10 +328,10 @@ export const getListaReservasUsuario = async (req, res) => {
         });
 
         const combinedResult = result.map(item => {
-            item.registro_reserva = moment(item.registro_reserva).format('YYYY-MM-DD HH:mm:ss');
-            item.fecha_reserva = moment(item.fecha_reserva).format('YYYY-MM-DD');
+            item.registro_reserva = fechaFormateada(item.registro_reserva);  // Usa la función definida aquí
+            item.fecha_reserva = fechaFormateada(item.fecha_reserva);  // Usa la función definida aquí
 
-            if (moment(item.fecha_reserva).isBefore(moment(), 'day')) {
+            if (moment(item.fecha_reserva, 'DD-MM-YYYY').isBefore(moment(), 'day')) {
                 item.estado = 'finalizado';
             }
 
