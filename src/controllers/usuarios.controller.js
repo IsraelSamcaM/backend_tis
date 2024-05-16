@@ -213,14 +213,17 @@ export const getMateriasAsociados = async (req, res) => {
                 respuesta = usuarios.flatMap(usuario =>
                     usuario.aux_grupos.filter(auxGrupo =>
                         materiasComunes.includes(auxGrupo.grupo.materia.nombre_materia)
-                    ).map(auxGrupo => ({
-                        id_aux_grupo: auxGrupo.id_aux_grupo,
-                        id_grupo: auxGrupo.grupo.id_grupo,
-                        nombre_grupo: auxGrupo.grupo.nombre_grupo,
-                        id_materia: auxGrupo.grupo.materia.id_materia,
-                        nombre_materia: auxGrupo.grupo.materia.nombre_materia,
-                        cantidad_est: auxGrupo.grupo.cantidad_est
-                    }))
+                    ).map(auxGrupo => {
+                        const nombreGrupo = usuario.tipo_usuario === "AUXILIAR" ? `${auxGrupo.grupo.nombre_grupo} (AUXILIATURA)` : auxGrupo.grupo.nombre_grupo;
+                        return {
+                            id_aux_grupo: auxGrupo.id_aux_grupo,
+                            id_grupo: auxGrupo.grupo.id_grupo,
+                            nombre_grupo: nombreGrupo,
+                            id_materia: auxGrupo.grupo.materia.id_materia,
+                            nombre_materia: auxGrupo.grupo.materia.nombre_materia,
+                            cantidad_est: auxGrupo.grupo.cantidad_est
+                        };
+                    })
                 );
             }
         }
@@ -230,6 +233,7 @@ export const getMateriasAsociados = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
 
 
