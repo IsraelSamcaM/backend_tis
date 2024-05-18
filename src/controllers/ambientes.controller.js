@@ -5,6 +5,8 @@ import {Baja} from '../models/Baja.js'
 import { Usuario } from '../models/Usuario.js';
 import { Reserva } from '../models/Reserva.js';
 
+import { sequelize } from "../database/database.js";
+
 
 export const getAmbientes = async (req, res) =>{
     try {
@@ -238,4 +240,22 @@ export const registrarBaja = async (req, res) => {
     }
 };
 
+
+
+export const registrarAlta = async (req, res) => {
+    try {
+        const { id_ambiente } = req.params
+
+        const ambiente = await Ambiente.findByPk(id_ambiente);
+        ambiente.disponible = true;
+        ambiente.actualizacion = sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
+        await ambiente.save();
+        
+
+        return res.json(ambiente);
+    } catch (error) {
+        console.error('Error al editar ambiente completo:', error);
+        return res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}
 

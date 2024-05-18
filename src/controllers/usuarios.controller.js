@@ -184,7 +184,8 @@ export const getMateriasAsociados = async (req, res) => {
                     attributes: ['id_grupo', 'nombre_grupo', 'cantidad_est'],
                 }],
                 attributes: ['id_aux_grupo']
-            }]
+            }],
+            attributes: ['id_usuario', 'tipo_usuario'] 
         });
 
         if (!usuarios || usuarios.length === 0) {
@@ -196,6 +197,7 @@ export const getMateriasAsociados = async (req, res) => {
         if (id_solicitantes.length === 1) {
             respuesta = usuarios.flatMap(usuario =>
                 usuario.aux_grupos.map(auxGrupo => ({
+                    id_usuario: usuario.id_usuario,
                     id_aux_grupo: auxGrupo.id_aux_grupo,
                     id_grupo: auxGrupo.grupo.id_grupo,
                     nombre_grupo: auxGrupo.grupo.nombre_grupo,
@@ -217,6 +219,7 @@ export const getMateriasAsociados = async (req, res) => {
                     ).map(auxGrupo => {
                         const nombreGrupo = usuario.tipo_usuario === "AUXILIAR" ? `${auxGrupo.grupo.nombre_grupo} (AUXILIATURA)` : auxGrupo.grupo.nombre_grupo;
                         return {
+                            id_usuario: usuario.id_usuario,
                             id_aux_grupo: auxGrupo.id_aux_grupo,
                             id_grupo: auxGrupo.grupo.id_grupo,
                             nombre_grupo: nombreGrupo,
