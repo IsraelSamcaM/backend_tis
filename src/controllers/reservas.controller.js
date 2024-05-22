@@ -13,6 +13,10 @@ const fechaFormateada = (dateString, soloFecha = false) => {
     return soloFecha ? moment(dateString).format('DD-MM-YYYY') : moment(dateString).format('HH:mm DD-MM-YYYY');
 };
 
+const fechaFormateada2 = (dateString, soloFecha = false) => {
+    return soloFecha = moment(dateString).format('DD-MM-YYYY');
+};
+
 // {
 //     "id_disponible": 226,
 //     "fecha_reserva":"2024-04-17",
@@ -199,7 +203,7 @@ const obtenerDetallesReservas = async (disponiblesAmbienteDia, fechaReserva) => 
         tipo_ambiente: disponible.ambiente.tipo,
         capacidad_ambiente:  disponible.ambiente.capacidad,
         estado: 'Habilitado',
-        fecha: fechaReserva,
+        fecha: fechaFormateada2(fechaReserva),
         id_tabla: String(disponible.id_disponible).padStart(3, '0')
     }));
     return mapeoDisponibles;
