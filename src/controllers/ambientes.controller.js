@@ -6,7 +6,7 @@ import { Usuario } from '../models/Usuario.js';
 import { Reserva } from '../models/Reserva.js';
 
 import { sequelize } from "../database/database.js";
-
+import moment from 'moment';
 
 export const getAmbientes = async (req, res) =>{
     try {
@@ -60,7 +60,7 @@ export const createAmbienteCompleto = async (req, res) => {
             ubicacion,
             porcentaje_min,
             porcentaje_max,
-            actualizacion: new Date()
+            actualizacion: moment().tz("America/La_Paz").toDate()
         });
 
         for (const diaNombre in dia) { 

@@ -166,21 +166,22 @@ export const deleteApertura = async (req, res) => {
 
 export const aperturaPorFecha = async (req, res) => {
     try {
-        const fechaActual = new Date(); 
-
+        const fechaActual = moment().tz("America/La_Paz").toDate(); 
+        console.log(fechaActual); 
+        
         const aperturas = await Apertura.findAll({
             where: {
-                apertura_inicio: {
-                    [Op.lte]: fechaActual 
-                },
-                
-                apertura_fin: {
-                    [Op.gte]: fechaActual 
-                }
-            }
+                [Op.and]: [
+                    //{ apertura_inicio: { [Op.lte]: fechaActual } },
+                    { apertura_fin: { [Op.gte]: fechaActual } }
+                ]
+            },
+            order: [
+                ['apertura_inicio', 'ASC'] 
+            ]
         });
-
-        res.json(aperturas); 
+         
+        res.json(aperturas);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
