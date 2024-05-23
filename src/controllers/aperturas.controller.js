@@ -40,15 +40,18 @@ export const getAperturasTabla = async (req, res) => {
             const inicioHoraMinutos = apertura.apertura_hora_inicio.slice(0, 5);
             const finHoraMinutos = apertura.apertura_hora_fin.slice(0, 5); 
             const periodo = `${formatDateTime(apertura.reserva_inicio)} ${formatDateTime(apertura.reserva_fin)}`;
-            const now = new Date();
+            const now = moment().tz("America/La_Paz").toDate();
 
             // Estado
             let estado = '';
-            if (now > apertura.apertura_fin) {
-                estado = 'FINALIZADO';
-            } else if ( now <= apertura.apertura_fin) {
-                estado = 'VIGENTE';
-            }
+            
+                if (now > apertura.apertura_fin) {
+                    estado = 'FINALIZADO';
+                } else if (now >= apertura.apertura_inicio && now <= apertura.apertura_fin) {
+                    estado = 'EN CURSO';
+                } else if (now < apertura.apertura_inicio) {
+                    estado = 'VIGENTE';
+                }
 
             return {
                 "inicio_apertura": `${inicioHoraMinutos} ${inicio}`,
