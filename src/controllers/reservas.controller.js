@@ -9,8 +9,12 @@ import { Model } from 'sequelize';
 
 import moment from 'moment';
 
-const fechaFormateada = (dateString) => {
-    return moment(dateString).format('DD-MM-YYYY');
+const fechaFormateada = (dateString, soloFecha = false) => {
+    return soloFecha ? moment(dateString).format('DD-MM-YYYY') : moment(dateString).format('HH:mm DD-MM-YYYY');
+};
+
+const fechaFormateada2 = (dateString, soloFecha = false) => {
+    return soloFecha = moment(dateString).format('DD-MM-YYYY');
 };
 
 // {
@@ -199,7 +203,7 @@ const obtenerDetallesReservas = async (disponiblesAmbienteDia, fechaReserva) => 
         tipo_ambiente: disponible.ambiente.tipo,
         capacidad_ambiente:  disponible.ambiente.capacidad,
         estado: 'Habilitado',
-        fecha: fechaReserva,
+        fecha: fechaFormateada2(fechaReserva),
         id_tabla: String(disponible.id_disponible).padStart(3, '0')
     }));
     return mapeoDisponibles;
@@ -270,8 +274,8 @@ export const getListaReservas = async (req, res) => {
                 existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
                 existingItem.cantidad_sumada += current.cantidad_sumada;
             } else {
-                current.registro_reserva = fechaFormateada(current.registro_reserva);  // Usa la función definida aquí
-                current.fecha_reserva = fechaFormateada(current.fecha_reserva);  // Usa la función definida aquí
+                current.registro_reserva = fechaFormateada(current.registro_reserva);  // Formato completo
+                current.fecha_reserva = fechaFormateada(current.fecha_reserva, true);  // Solo fecha
 
                 if (moment(current.fecha_reserva, 'DD-MM-YYYY').isBefore(moment(), 'day')) {
                     current.estado = 'finalizado';
@@ -328,8 +332,8 @@ export const getListaReservasUsuario = async (req, res) => {
         });
 
         const combinedResult = result.map(item => {
-            item.registro_reserva = fechaFormateada(item.registro_reserva);  // Usa la función definida aquí
-            item.fecha_reserva = fechaFormateada(item.fecha_reserva);  // Usa la función definida aquí
+            item.registro_reserva = fechaFormateada(item.registro_reserva);  // Formato completo
+            item.fecha_reserva = fechaFormateada(item.fecha_reserva, true);  // Solo fecha
 
             if (moment(item.fecha_reserva, 'DD-MM-YYYY').isBefore(moment(), 'day')) {
                 item.estado = 'finalizado';
@@ -345,5 +349,4 @@ export const getListaReservasUsuario = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-
 
