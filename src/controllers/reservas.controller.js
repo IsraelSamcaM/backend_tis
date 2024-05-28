@@ -336,6 +336,7 @@ export const getListaReservasUsuario = async (req, res) => {
         });
 
         const combinedResult = result.map(item => {
+            item.registro_reserva_sin_formato = item.registro_reserva;
             item.registro_reserva = fechaFormateada(item.registro_reserva);  // Formato completo
             item.fecha_reserva = fechaFormateada(item.fecha_reserva, true);  // Solo fecha
 
