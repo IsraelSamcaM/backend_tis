@@ -400,3 +400,44 @@ export const reporteDocentes = async (req, res) => {
         return res.status(500).json({ message: 'Error interno del servidor' });
     }
 }
+
+export const getReservasAmbiente = async (req, res) => {
+    try {
+        const { id_ambiente } = req.params;
+
+        const result = await sequelize.query(`
+            SELECT R.id_reserva, LPAD(R.id_reserva::text, 3, '0') as id_reserva_lista, u.nombre_usuario, u.tipo_usuario,
+                   r.fecha_reserva, r.registro_reserva, r.estado,r.motivo, p.hora_inicio, p.hora_fin,
+                   string_agg(g.nombre_grupo, ', ' ORDER BY g.nombre_grupo) AS nombre_grupo,
+                   string_agg(m.nombre_materia || ' - ' || g.nombre_grupo, ', ' ORDER BY m.nombre_materia) AS nombre_materia,
+                   A.nombre_ambiente,
+                   R.cantidad_total AS cantidad_est,
+                   SUM(g.cantidad_est) AS cantidad_sumada,
+                   A.capacidad,
+                   A.porcentaje_min,
+                   A.porcentaje_max,
+                   FLOOR(A.capacidad * (A.porcentaje_min / 100.0)) AS min_capacidad,
+                   FLOOR(A.capacidad * (A.porcentaje_max / 100.0)) AS max_capacidad
+            FROM ambientes A
+            JOIN disponibles D ON A.id_ambiente = D.ambiente_id
+            JOIN periodos P ON D.periodo_id = P.id_periodo
+            JOIN reservas R ON r.disponible_id = D.id_disponible
+            JOIN auxiliar_reservas ar ON ar.reserva_id = R.id_reserva
+            JOIN aux_grupos ag ON ar.aux_grupo_id = ag.id_aux_grupo
+            JOIN grupos g ON g.id_grupo = ag.grupo_id
+            JOIN materias m ON g.materia_id = m.id_materia
+            JOIN usuarios u ON ag.usuario_id = u.id_usuario
+            WHERE A.id_ambiente = :id_ambiente
+            GROUP BY R.id_reserva, u.nombre_usuario, u.tipo_usuario,
+                r.fecha_reserva, r.registro_reserva, r.estado,r.motivo, p.hora_inicio, p.hora_fin, A.nombre_ambiente, A.capacidad, A.porcentaje_min, A.porcentaje_max
+            ORDER BY R.fecha_reserva DESC, R.registro_reserva DESC;
+        `, {
+            replacements: { id_ambiente },
+            type: sequelize.QueryTypes.SELECT
+        });
+
+        res.json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
