@@ -295,7 +295,14 @@ export const reporteAmbientes = async (req, res) => {
             order: [[sequelize.literal('cantidad_reservas'), 'DESC']],
             raw: true
         });
-        const top = ambientes.slice(0, 6);
+
+        const ambientesModificados = ambientes.map(ambiente => ({
+            ...ambiente,
+            disponible: ambiente.disponible ? 'HABILITADO' : 'DESHABILITADO',
+            tipo: ambiente.tipo.toUpperCase()
+        }));
+
+        const top = ambientesModificados.slice(0, 6);
         res.json(top);
     } catch (error) {
         console.error('Error al obtener el reporte de ambientes:', error);

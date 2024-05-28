@@ -277,7 +277,8 @@ export const getListaReservas = async (req, res) => {
                 existingItem.nombre_grupo += `, ${current.nombre_grupo}`;
                 existingItem.cantidad_sumada += current.cantidad_sumada;
             } else {
-                current.registro_reserva = fechaFormateada(current.registro_reserva);  // Formato completo
+                current.registro_reserva_sin_formato = current.registro_reserva;
+                current.registro_reserva = fechaFormateada(current.registro_reserva);  // Formato completo 
                 current.fecha_reserva = fechaFormateada(current.fecha_reserva, true);  // Solo fecha
 
                 if (moment(current.fecha_reserva, 'DD-MM-YYYY').isBefore(moment(), 'day')) {
