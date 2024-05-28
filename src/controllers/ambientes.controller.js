@@ -6,6 +6,7 @@ import { Usuario } from '../models/Usuario.js';
 import { Reserva } from '../models/Reserva.js';
 
 import { sequelize } from "../database/database.js";
+import { Op } from 'sequelize';
 import moment from 'moment';
 
 export const getAmbientes = async (req, res) =>{
@@ -259,3 +260,45 @@ export const registrarAlta = async (req, res) => {
     }
 }
 
+export const reporteAmbientes = async (req, res) => {
+    try {
+        let { fecha_inicio, fecha_fin } = req.body;
+
+        const fechaInicio = new Date(fecha_inicio);
+        const fechaFin = new Date(fecha_fin);
+
+        fechaFin.setDate(fechaFin.getDate() + 1);
+
+        const ambientes = await Ambiente.findAll({
+            attributes: [
+                'nombre_ambiente',
+                'capacidad',
+                'disponible',
+                'tipo',
+                [sequelize.fn('COUNT', sequelize.col('disponibles->reservas.id_reserva')), 'cantidad_reservas']
+            ],
+            include: [{
+                model: Disponible,
+                attributes: [],
+                include: [{
+                    model: Reserva,
+                    attributes: [],
+                    where: {
+                        estado: 'vigente',
+                        fecha_reserva: {
+                            [Op.between]: [fechaInicio, fechaFin]
+                        }
+                    }
+                }]
+            }],
+            group: ['ambientes.id_ambiente'],
+            order: [[sequelize.literal('cantidad_reservas'), 'DESC']],
+            raw: true
+        });
+        const top = ambientes.slice(0, 6);
+        res.json(top);
+    } catch (error) {
+        console.error('Error al obtener el reporte de ambientes:', error);
+        return res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}

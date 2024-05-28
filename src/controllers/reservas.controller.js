@@ -3,9 +3,12 @@ import { Ambiente } from '../models/Ambiente.js';
 import { Disponible } from '../models/Disponible.js';
 import { Periodo } from '../models/Periodo.js';
 import { Auxiliar_reserva } from '../models/Auxiliar_reserva.js';
+import { Usuario } from '../models/Usuario.js';
+import { Aux_grupo } from '../models/Aux_grupos.js';
 
 import { sequelize } from "../database/database.js"
 import { Model } from 'sequelize';
+import { Op } from 'sequelize';
 
 import moment from 'moment';
 
@@ -350,3 +353,50 @@ export const getListaReservasUsuario = async (req, res) => {
     }
 };
 
+export const reporteDocentes = async (req, res) => {
+    try {
+        let { fecha_inicio, fecha_fin } = req.body;
+
+        const fechaInicio = new Date(fecha_inicio);
+        const fechaFin = new Date(fecha_fin);
+
+        fechaFin.setDate(fechaFin.getDate() + 1);
+
+        const docentes = await Usuario.findAll({
+            attributes: [
+                'nombre_usuario',
+                'tipo_usuario',
+                'codsiss',
+                [sequelize.fn('COUNT', sequelize.col('aux_grupos->auxiliar_reservas->reserva.id_reserva')), 'cantidad_reservas']
+            ],
+            include: [{
+                model: Aux_grupo,
+                attributes: [],
+                include: [{
+                    model: Auxiliar_reserva,
+                    attributes: [],
+                    include: [{
+                        model: Reserva,
+                        attributes: [],
+                        where: {
+                            estado: 'vigente',
+                            fecha_reserva: {
+                                [Op.between]: [fechaInicio, fechaFin]
+                            }
+                        }
+                    }]
+                }]
+            }],
+            group: ['usuarios.id_usuario'],
+            order: [[sequelize.literal('cantidad_reservas'), 'DESC']],
+            raw: true
+        });
+
+        const top = docentes.slice(0, 6);
+
+        res.json(top);
+    } catch (error) {
+        console.error('Error al obtener el reporte de docentes:', error);
+        return res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}
