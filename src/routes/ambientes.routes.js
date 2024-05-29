@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
     createAmbiente, getAmbiente, deleteAmbiente, updateAmbiente,
     getAmbientes, createAmbienteCompleto, editarAmbienteCompleto, 
-    registrarBaja, registrarAlta
+    registrarBaja, registrarAlta, reporteAmbientes
 } from '../controllers/ambientes.controller.js'
 
 const router = Router();
@@ -23,7 +23,7 @@ router.delete('/:id_ambiente', deleteAmbiente)
 router.get('/:id_ambiente', getAmbiente)
 
 router.put('/editar-disponibilidad/:id_ambiente', registrarAlta)
-
+router.post('/reporte-ambientes', reporteAmbientes);
 
 
 
