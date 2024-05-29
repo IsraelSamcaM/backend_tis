@@ -1,12 +1,17 @@
-import {Ambiente} from '../models/Ambiente.js'
-import {Disponible} from '../models/Disponible.js'
-import {Periodo} from '../models/Periodo.js'
-import {Baja} from '../models/Baja.js'
+import { Ambiente } from '../models/Ambiente.js'
+import { Disponible } from '../models/Disponible.js'
+import { Periodo } from '../models/Periodo.js'
+import { Baja } from '../models/Baja.js'
 import { Usuario } from '../models/Usuario.js';
 import { Reserva } from '../models/Reserva.js';
+import { Notificacion } from '../models/Notificacion.js';
+import { Auxiliar_reserva } from '../models/Auxiliar_reserva.js';
+import { Aux_grupo } from '../models/Aux_grupos.js';
+import { Grupo } from '../models/Grupo.js';
+import { Materia } from '../models/Materia.js';
 
 import { sequelize } from "../database/database.js";
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export const getAmbientes = async (req, res) =>{
     try {
@@ -205,12 +210,20 @@ export const registrarBaja = async (req, res) => {
     try {
         const { id_ambiente, motivo } = req.body;
 
+        const ambiente = await Ambiente.findByPk(id_ambiente);
+        
+        if (!ambiente) {
+            return res.status(404).json({ message: 'Ambiente no encontrado' });
+        }
+        if (ambiente.disponible == false) {
+            return res.status(200).json({ message: 'El ambiente ya fue dado de baja anteriormente' });
+        }
+
         const createBaja = await Baja.create({
             ambiente_id: id_ambiente,
             motivo,
         });
-
-        const ambiente = await Ambiente.findByPk(id_ambiente);
+ 
         ambiente.disponible = false;
         ambiente.actualizacion = sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
         await ambiente.save();
@@ -222,6 +235,27 @@ export const registrarBaja = async (req, res) => {
             },
         });
         const dispIds = disponibles.map(disponible => disponible.id_disponible);
+
+        const reservasIds = await Reserva.findAll({
+            attributes: ['id_reserva'],where: {disponible_id: dispIds,estado: 'vigente',},
+        });
+
+        const users = await Usuario.findAll({ where: { tipo_usuario: ['DOCENTE','AUXILIAR']} });
+        const usuarios = users.map(user => user.id_usuario);
+
+        const descripcion = `SE COMUNICA QUE EL AMBIENTE "${ambiente.nombre_ambiente}" HA SIDO DESHABILITADO PARA SU USO${motivo ? `, POR EL SIGUIENTE MOTIVO: ${motivo}` : ''}`;
+
+        const notificaciones = usuarios.map(usuario_id  => ({
+            usuario_id ,
+            descripcion,
+            leido: false
+        }));
+        await Notificacion.bulkCreate(notificaciones);
+
+        const idsReservas = reservasIds.map(reserva => reserva.id_reserva);
+
+        notificarUsuarios(idsReservas, ambiente.nombre_ambiente , motivo)
+        //console.log(idsReservas)
 
         await Reserva.update(
             { estado: 'cancelado' },
@@ -240,6 +274,65 @@ export const registrarBaja = async (req, res) => {
     }
 };
 
+async function notificarUsuarios(idsReservas, nombre_ambiente , motivo) {
+    const reservas = await Reserva.findAll({
+        where: {
+            id_reserva: idsReservas
+        },
+        include: [
+            {
+                model: Disponible,
+                include: [
+                    {
+                        model: Periodo,
+                        attributes: ['hora_inicio', 'hora_fin']
+                    }
+                ]
+            },
+            {
+                model: Auxiliar_reserva,
+                include: [
+                    {
+                        model: Aux_grupo,
+                        include: [
+                            {
+                                model: Usuario,
+                                attributes: ['id_usuario']
+                            }
+                        ],
+                        include: [
+                            {
+                                model: Grupo,
+                                attributes: ['nombre_grupo'],
+                                include: [
+                                    {
+                                        model: Materia,
+                                        attributes: ['nombre_materia'],
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        raw: true
+    });
+    //console.log(reservas);
+    
+
+    for (const reserva of reservas) {
+        let nombreMateria = reserva['auxiliar_reservas.aux_grupo.grupo.materia.nombre_materia'];
+        let nombreGrupo = reserva['auxiliar_reservas.aux_grupo.grupo.nombre_grupo'];
+
+        let descripcion = `SE COMUNICA QUE SU RESERVA DEL AMBIENTE "${nombre_ambiente}" PARA LA MATERIA "${nombreMateria} - ${nombreGrupo}" EN FECHA ${moment(reserva.fecha_reserva).format('DD-MM-YYYY')} Y EN HORARIO ${moment(reserva['disponible.periodo.hora_inicio'], 'HH:mm').format('HH:mm')} - ${moment(reserva['disponible.periodo.hora_fin'], 'HH:mm').format('HH:mm')} SE HA CANCELADO.`;
+        await Notificacion.create({
+          usuario_id: reserva['auxiliar_reservas.aux_grupo.usuario_id'],
+          descripcion,
+          leido: false
+        });
+    }
+}
 
 
 export const registrarAlta = async (req, res) => {
@@ -247,10 +340,30 @@ export const registrarAlta = async (req, res) => {
         const { id_ambiente } = req.params
 
         const ambiente = await Ambiente.findByPk(id_ambiente);
+
+        if (!ambiente) {
+            return res.status(404).json({ message: 'Ambiente no encontrado' });
+        }
+        if (ambiente.disponible) {
+            return res.status(200).json({ message: 'El ambiente ya fue dado de alta anteriormente' });
+        }
+
         ambiente.disponible = true;
         ambiente.actualizacion = sequelize.literal('CURRENT_TIMESTAMP - interval \'4 hours\'')
         await ambiente.save();
         
+        const users = await Usuario.findAll({ where: { tipo_usuario: ['DOCENTE','AUXILIAR']} });
+        const usuarios = users.map(user => user.id_usuario);
+
+        const descripcion = `SE COMUNICA QUE EL AMBIENTE "${ambiente.nombre_ambiente}" HA SIDO HABILITADO PARA SU USO`;
+    
+        const notificaciones = usuarios.map(usuario_id  => ({
+            usuario_id ,
+            descripcion,
+            leido: false
+        }));
+
+        await Notificacion.bulkCreate(notificaciones);
 
         return res.json(ambiente);
     } catch (error) {

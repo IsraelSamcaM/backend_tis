@@ -1,6 +1,7 @@
 import {DataTypes, INTEGER} from 'sequelize'
 import { sequelize } from '../database/database.js'
 import { Aux_grupo } from './Aux_grupos.js' 
+import { Notificacion } from './Notificacion.js' 
 import { toDefaultValue } from 'sequelize/lib/utils';
 
 
@@ -51,6 +52,17 @@ Usuario.hasMany(Aux_grupo,{
 })
 
 Aux_grupo.belongsTo(Usuario,{
+    foreignKey: 'usuario_id',
+    targetId: 'id_usuario'
+})
+
+
+Usuario.hasMany(Notificacion,{
+    foreignKey: 'usuario_id',
+    sourceKey: 'id_usuario'
+})
+
+Notificacion.belongsTo(Usuario,{
     foreignKey: 'usuario_id',
     targetId: 'id_usuario'
 })
