@@ -20,6 +20,7 @@ import gruposRoutes from "./routes/grupos.routes.js";
 import disponiblesRoutes from "./routes/disponibles.routes.js";
 import aperturasRoutes from "./routes/aperturas.routes.js";
 import reservasRoutes from "./routes/reservas.routes.js";
+import notificacionesRoutes from "./routes/notificaciones.routes.js";
 
 // Middlewares
 
@@ -39,6 +40,7 @@ app.use("/api/grupos", gruposRoutes );
 app.use("/api/disponibles", disponiblesRoutes );
 app.use("/api/aperturas",aperturasRoutes);
 app.use("/api/reservas",reservasRoutes);
+app.use("/api/notificaciones",notificacionesRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: {

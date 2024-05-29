@@ -13,7 +13,8 @@ import { sequelize } from "./src/database/database.js";
 //import './src/models/Reserva.js'
 //import './src/models/Baja.js'
 // import './models/Tipo_usuario.js'
- //import './models/Usuario.js'
+//import './src/models/Usuario.js'
+//import './src/models/Notificacion.js'
 //import './src/models/Usuario.js'
 
 

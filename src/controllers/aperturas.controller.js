@@ -1,6 +1,9 @@
 import { Apertura } from '../models/Apertura.js';
+import { Usuario } from '../models/Usuario.js';
+import { Notificacion } from '../models/Notificacion.js';
 import { Op } from 'sequelize';
 import moment from 'moment';
+
 
 const formatDateTime = (dateString) => {
     return moment(dateString).format('DD-MM-YYYY');
@@ -40,8 +43,10 @@ export const getAperturasTabla = async (req, res) => {
             const inicioHoraMinutos = apertura.apertura_hora_inicio.slice(0, 5);
             const finHoraMinutos = apertura.apertura_hora_fin.slice(0, 5); 
             const periodo = `${formatDateTime(apertura.reserva_inicio)} ${formatDateTime(apertura.reserva_fin)}`;
-            const now = moment().tz("America/La_Paz").toDate();
 
+            const now = moment().tz("America/La_Paz").subtract(4, 'hours').toDate();
+
+            console.log(now)
             // Estado
             let estado = '';
             
@@ -129,6 +134,26 @@ export const createApertura = async (req, res) => {
             docente : esDocente, 
             auxiliar : esAuxiliar 
         });
+
+        let usuarios = [];
+        if (esDocente) {
+            const docentes = await Usuario.findAll({ where: { tipo_usuario: 'DOCENTE' } });
+            usuarios = usuarios.concat(docentes.map(docente => docente.id_usuario));
+        }
+        if (esAuxiliar) {
+            const auxiliares = await Usuario.findAll({ where: { tipo_usuario: 'AUXILIAR' } });
+            usuarios = usuarios.concat(auxiliares.map(auxiliar => auxiliar.id_usuario));
+        }
+
+        const descripcion = `EL SISTEMA PARA REALIZAR SUS RESERVAS ESTARÁ HABILITADO DESDE EL ${moment(apertura_hora_inicio, 'HH:mm').format('HH:mm')} ${moment(apertura_inicio).format('DD-MM-YYYY')} HASTA ${moment(apertura_hora_fin, 'HH:mm').format('HH:mm')} ${moment(apertura_fin).format('DD-MM-YYYY')}`;
+        
+        const notificaciones = usuarios.map(usuario_id  => ({
+            usuario_id ,
+            descripcion,
+            leido: false
+        }));
+
+        await Notificacion.bulkCreate(notificaciones);
 
         res.status(201).json(nuevaApertura);
     } catch (error) {
