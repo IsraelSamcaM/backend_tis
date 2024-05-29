@@ -15,7 +15,6 @@ import { sequelize } from "../database/database.js";
 import { Op } from 'sequelize';
 import moment from 'moment';
 
-
 export const getAmbientes = async (req, res) =>{
     try {
         const ambientes = await Ambiente.findAll({
