@@ -208,8 +208,28 @@ export const aperturaPorFecha = async (req, res) => {
                 ['apertura_inicio', 'ASC'] 
             ]
         });
-         
-        res.json(aperturas);
+
+        const now = moment().tz("America/La_Paz").subtract(4, 'hours').toDate();
+        console.log(now);
+
+        // Agregar estado a cada apertura
+        const aperturasConEstado = aperturas.map(apertura => {
+            let estado = '';
+            if (now > apertura.apertura_fin) {
+                estado = 'FINALIZADO';
+            } else if (now >= apertura.apertura_inicio && now <= apertura.apertura_fin) {
+                estado = 'EN CURSO';
+            } else if (now < apertura.apertura_inicio) {
+                estado = 'VIGENTE';
+            }
+
+            return {
+                ...apertura.toJSON(), // Convertir instancia de Sequelize a objeto simple
+                estado
+            };
+        });
+
+        res.json(aperturasConEstado);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
