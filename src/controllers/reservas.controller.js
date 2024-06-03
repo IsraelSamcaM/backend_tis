@@ -394,7 +394,8 @@ export const reporteDocentes = async (req, res) => {
             raw: true
         });
 
-        const top = docentes.slice(0, 6);
+        const docentesFiltrados = docentes.filter(docente => docente.cantidad_reservas > 0);
+        const top = docentesFiltrados.slice(0, 10);
 
         res.json(top);
     } catch (error) {
