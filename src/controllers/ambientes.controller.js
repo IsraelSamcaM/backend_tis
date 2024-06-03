@@ -414,9 +414,10 @@ export const reporteAmbientes = async (req, res) => {
             ...ambiente,
             disponible: ambiente.disponible ? 'HABILITADO' : 'DESHABILITADO',
             tipo: ambiente.tipo.toUpperCase()
-        }));
+        }))
+        .filter(ambiente => ambiente.cantidad_reservas > 0);
 
-        const top = ambientesModificados.slice(0, 6);
+        const top = ambientesModificados.slice(0, 10);
         res.json(top);
     } catch (error) {
         console.error('Error al obtener el reporte de ambientes:', error);
